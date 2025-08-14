@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style_admin.css' %}">
+    <title>Document</title>
+</head>
+<body>
+<div class="container">
+    <h2 class="titulo text-center mb-4">Listado de Usuarios</h2>
+
+    <form method="GET" class="mb-3">
+        <select name="rol" class="select-boca" onchange="this.form.submit()">
+            <option value="">Todos</option>
+            <option value="Administrador" {% if rol_filtro == "Administrador" %}selected{% endif %}>Administrador</option>
+            <option value="Empresa Exportadora" {% if rol_filtro == "Empresa Exportadora" %}selected{% endif %}>Empresa Exportadora</option>
+            <option value="Importador" {% if rol_filtro == "Importador" %}selected{% endif %}>Importador</option>
+        </select>
+    </form>
+
+    <table class="table table-boca">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.usuario_id }}</td>
+                <td>{{ usuario.username }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.rol }}</td>
+                <td>
+                    <a href="#" class="btn-boca">Editar</a>
+                    <a href="#" class="btn-boca">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No hay usuarios registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de Empresa</title>
+    <style>
+        body {
+            background-color: #222A59;
+            color: white;
+            font-family: 'Thin Thin italic', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #EB7DBF;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            font-family: 'Black Black italic', sans-serif;
+            color: #EB7DBF;
+        }
+
+        .panel-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #1A2042;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #EB7DBF;
+            color: #222A59;
+            font-weight: bold;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+        }
+
+        .info-box {
+            background-color: #1A2042;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .boton-accion {
+            background-color: #EB7DBF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .boton-accion:hover {
+            background-color: #f299d3;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Perfil de Empresa</h1>
+</header>
+
+<div class="panel-container">
+    <div class="sidebar">
+        <a href="{% url 'ver_perfil_empresa' %}">Ver perfil</a>
+        <a href="{% url 'editar_empresa' %}">Editar datos</a>
+        <a href="#">Reuniones</a>
+        <a href="#">Exportar</a>
+        <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
+    </div>
+
+    <div class="content">
+        <h2>{{ empresa.razon_social }}</h2>
+
+        <div class="info-box">
+            <p><strong>Teléfono:</strong> {{ empresa.telefono }}</p>
+            <p><strong>Capacidad Productiva:</strong> {{ empresa.capacidad_productiva }}</p>
+            <p><strong>Sitio Web:</strong>
+                <a href="{{ empresa.sitio_web }}" target="_blank" style="color: #EB7DBF;">
+                    {{ empresa.sitio_web }}
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

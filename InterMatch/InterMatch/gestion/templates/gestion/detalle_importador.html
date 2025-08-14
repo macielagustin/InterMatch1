@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del Importador</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            background-color: #222A59;
+            color: white;
+            font-family: 'Thin Thin italic', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #EB7DBF;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1,
+        h2 {
+            font-family: 'Black Black italic', sans-serif;
+            color: #EB7DBF;
+        }
+
+        .container {
+            padding: 40px;
+        }
+
+        .info-box {
+            background-color: #1A2042;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .boton-volver {
+            background-color: #EB7DBF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .boton-volver:hover {
+            background-color: #f299d3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Detalle del Importador</h1>
+    </header>
+
+    <div class="container">
+        <div class="info-box">
+            <h2>{{ importador.usuario.razon_social }}</h2>
+            <p><strong>Contacto:</strong> {{ importador.usuario.nombre }} {{ importador.usuario.apellido }}</p>
+            <p><strong>Email:</strong> {{ importador.usuario.email }}</p>
+            <p><strong>Teléfono:</strong> {{ importador.telefono }}</p>
+            <p><strong>País:</strong> {{ importador.pais.nombre }}</p>
+            <p><strong>Provincia:</strong> {{ importador.provincia.nombre }}</p>
+            <p><strong>Localidad:</strong> {{ importador.localidad.nombre }}</p>
+            <p><strong>Cantidad de empleados:</strong> {{ importador.cantidad_empleados }}</p>
+            <p><strong>Idiomas para negociar:</strong>
+                {% for idioma in importador.idiomas.all %}
+                {{ idioma.nombre }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Rubros de interés:</strong>
+                {% for rubro in importador.rubros.all %}
+                {{ rubro.nombre }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Países donde comercializa:</strong>
+                {% for pais in importador.paises_comercializa.all %}
+                {{ pais.nombre }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Tipo de importador:</strong> {{ importador.tipo_importador }}</p>
+            <p><strong>Tipo de proveedor buscado:</strong>
+                {% for tipo in importador.tipos_proveedor.all %}
+                {{ tipo.nombre }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Tipo de presentación buscada:</strong> {{ importador.tipo_presentacion }}</p>
+            <p><strong>Comentarios adicionales:</strong> {{ importador.comentarios_adicionales }}</p>
+        </div>
+        <a href="{% url 'crear_reunion' 'importador' importador.id %}" class="btn btn-success">
+            Hacer Match!
+        </a>
+        <a href="{% url 'importadores_disponibles' %}" class="boton-volver">← Volver al listado</a>
+    </div>
+
+</body>
+
+</html>

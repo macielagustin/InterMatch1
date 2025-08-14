@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registrarse - InterMatch</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+
+    <style>
+        #mensaje-exito {
+            background-color: #EB7DBF;
+            color: white;
+            font-style: italic;
+            font-weight: bold;
+            animation: fadeIn 1s ease-in-out;
+            transition: opacity 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        body {
+            background-color: #222A59;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-style: italic;
+        }
+
+
+        .container-center {
+            padding-top: 80px;
+            padding-bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+
+        .btn-container {
+            display: flex;
+            gap: 40px;
+            margin-top: 2rem;
+        }
+
+        .btn-square {
+            width: 180px;
+            height: 180px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1rem;
+            text-align: center;
+            padding: 20px;
+            text-wrap: wrap;
+            word-break: break-word;
+            max-width: 200px;
+        }
+
+        .btn-empresa {
+            background-color: #EB7DBF;
+            color: white;
+            border: none;
+        }
+
+        .btn-importador {
+            background-color: transparent;
+            color: white;
+            border: 2px solid #EB7DBF;
+        }
+
+        .btn-square:hover {
+            transform: scale(1.05);
+            transition: 0.3s;
+        }
+
+        .card-descripcion {
+            font-size: 0.85rem;
+            font-family: 'Thin Thin italic', sans-serif;
+            font-style: italic;
+            line-height: 1.2;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container px-5">
+            <a class="navbar-brand" href="{% url 'inicio' %}">InterMatch</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Sobre Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- MENSAJE DE CONFIRMACIÓN -->
+    <div class="container text-center mt-4">
+        <div id="mensaje-exito" class="alert" role="alert">
+            ¡Registro de persona realizado exitosamente! Ahora elegí cómo continuar con el registro.
+        </div>
+    </div>
+
+
+
+    <!-- SELECCIÓN -->
+    <div class="container-center text-center">
+        <h2 class="mb-3" style="color: #EB7DBF;">¿Cómo te querés registrar?</h2>
+        <p class="mb-4" style="max-width: 600px; margin: auto;">
+            Seleccioná una de las siguientes opciones según el perfil que mejor represente tu actividad:
+        </p>
+
+        <div class="d-flex flex-column flex-md-row justify-content-center gap-4 mt-5">
+
+            <a href="{% url 'registro_empresa' usuario_id=usuario_id %}"
+                class="btn btn-square btn-empresa d-flex flex-column justify-content-center align-items-center text-center">
+                <i class="bi bi-building" style="font-size: 2rem;"></i>
+                <strong>Empresa Exportadora</strong>
+                <small>Represento una empresa que produce y vende al exterior</small>
+            </a>
+
+            <!-- Importador -->
+            <a href="{% url 'registro_importador' usuario_id=usuario_id %}"
+                class="btn btn-square btn-importador d-flex flex-column justify-content-center align-items-center text-center">
+                <i class="bi bi-globe" style="font-size: 2rem;"></i>
+                <strong>Importador</strong>
+                <small>Busco proveedores argentinos para comprar productos</small>
+            </a>
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

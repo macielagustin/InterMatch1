@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de la Empresa Exportadora</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            background-color: #222A59;
+            color: white;
+            font-family: 'Thin Thin italic', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #EB7DBF;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            font-family: 'Black Black italic', sans-serif;
+            color: #EB7DBF;
+        }
+
+        .container {
+            padding: 40px;
+        }
+
+        .info-box {
+            background-color: #1A2042;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .boton-volver {
+            background-color: #EB7DBF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .boton-volver:hover {
+            background-color: #f299d3;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Detalle de la Empresa Exportadora</h1>
+</header>
+
+<div class="container">
+    <div class="info-box">
+        <h2>{{ empresa.razon_social }}</h2>
+        <p><strong>Contacto:</strong> {{ empresa.usuario.nombre }} {{ empresa.usuario.apellido }}</p>
+        <p><strong>Email:</strong> {{ empresa.usuario.email }}</p>
+        <p><strong>Teléfono:</strong> {{ empresa.telefono }}</p>
+        <p><strong>Provincia:</strong> {{ empresa.provincia.nombre }}</p>
+        <p><strong>Localidad:</strong> {{ empresa.localidad.nombre }}</p>
+        <p><strong>Sitio web:</strong> <a href="{{ empresa.sitio_web }}" style="color:#f299d3;" target="_blank">{{ empresa.sitio_web }}</a></p>
+        <p><strong>Rubro:</strong> {{ empresa.rubro.nombre }}</p>
+        <p><strong>Capacidad productiva mensual:</strong> {{ empresa.capacidad_mensual }}</p>
+        <p><strong>Certificaciones internacionales:</strong>
+            {% for cert in empresa.certificaciones.all %}
+                {{ cert.nombre }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        <p><strong>¿Exporta actualmente?:</strong> {{ empresa.exporta_actualmente|yesno:"Sí,No" }}</p>
+        <p><strong>Países donde exporta:</strong>
+            {% for pais in empresa.paises_exporta.all %}
+                {{ pais.nombre }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        <p><strong>Frecuencia de exportación:</strong> {{ empresa.frecuencia }}</p>
+        <p><strong>Comentarios adicionales:</strong> {{ empresa.comentarios }}</p>
+    </div>
+    <a href="{% url 'crear_reunion' 'empresa' empresa.empresa_id %}" class="btn btn-success">
+    Hacer Match!
+</a>
+
+    <a href="{% url 'empresas_disponibles' %}" class="boton-volver">← Volver al listado</a>
+</div>
+
+</body>
+</html>

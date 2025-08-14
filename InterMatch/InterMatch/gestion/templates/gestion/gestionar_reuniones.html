@@ -1,0 +1,50 @@
+{% extends "gestion/base.html" %}
+
+{% block title %}Gestionar Reuniones{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Reuniones Confirmadas</h2>
+
+    {% if reuniones %}
+    <table class="table table-striped table-bordered bg-white text-dark">
+        <div class="mb-3">
+            <a href="{% url 'exportar_reuniones_excel' %}" class="btn btn-success">
+                Exportar a Excel
+            </a>
+        </div>
+
+        <thead>
+            <tr>
+                <th>Empresa</th>
+                <th>Importador</th>
+                <th>Fecha</th>
+                <th>Horario</th>
+                <th>Estado</th>
+                <th>Mensaje</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reuniones %}
+            <tr>
+                <td>{{ r.empresa.razon_social }}</td>
+                <td>{{ r.importador.razon_social }}</td>
+                <td>{{ r.fecha }}</td>
+                <td>{{ r.horario.hora|default:"-" }}</td>
+                <td>{{ r.estado }}</td>
+                <td>{{ r.mensaje|default:"—" }}</td>
+                <td>
+                    <a href="{% url 'editar_reunion' r.id %}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{% url 'eliminar_reunion' r.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay reuniones registradas.</p>
+    {% endif %}
+</div>
+{% endblock %}

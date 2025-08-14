@@ -1,0 +1,13 @@
+{% extends "gestion/base.html" %}
+
+{% block title %}Reunión Confirmada{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="alert alert-success">
+        <h2 class="mb-3">¡Reunión confirmada con éxito!</h2>
+        <p>Se ha registrado la reunión. Pronto recibirás un correo de confirmación.</p>
+        <a href="{% url 'panel_empresa' %}" class="btn btn-primary mt-3">Volver al Panel</a>
+    </div>
+</div>
+{% endblock %}

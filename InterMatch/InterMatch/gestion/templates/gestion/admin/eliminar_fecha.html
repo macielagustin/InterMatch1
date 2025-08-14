@@ -1,0 +1,17 @@
+{% extends 'gestion/base_admin.html' %}
+
+{% block title %}Eliminar Fecha{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>¿Estás seguro de que deseas eliminar esta fecha?</h2>
+
+    <p><strong>Fecha:</strong> {{ fecha.fecha }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="{% url 'gestionar_fechas' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

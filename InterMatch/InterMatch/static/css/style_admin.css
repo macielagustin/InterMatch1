@@ -1,0 +1,46 @@
+body {
+    background-color: #222A59;
+    color: white;
+    font-family: 'Thin Thin Italic', sans-serif;
+}
+
+h1, h2, h3, .titulo {
+    font-family: 'Black Black Italic', sans-serif;
+    color: #EB7DBF;
+}
+
+.container {
+    padding: 20px;
+}
+
+.btn-boca {
+    background-color: #EB7DBF;
+    color: #222A59;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.btn-boca:hover {
+    background-color: #f595cc;
+    color: #000;
+}
+
+.table-boca {
+    background-color: white;
+    color: #222A59;
+    border: 1px solid #EB7DBF;
+}
+
+.table-boca th {
+    background-color: #EB7DBF;
+    color: #222A59;
+}
+
+.select-boca {
+    background-color: white;
+    color: #222A59;
+    border-radius: 5px;
+    padding: 5px;
+}

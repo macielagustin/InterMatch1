@@ -1,0 +1,16 @@
+{% extends "gestion/base.html" %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h2>¿Estás seguro que querés eliminar esta reunión?</h2>
+    <p><strong>Empresa:</strong> {{ reunion.empresa.razon_social }}<br>
+       <strong>Importador:</strong> {{ reunion.importador.razon_social }}<br>
+       <strong>Fecha:</strong> {{ reunion.fecha }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'gestionar_reuniones' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

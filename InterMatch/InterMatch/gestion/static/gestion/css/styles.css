@@ -1,0 +1,108 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@1,100;1,900&display=swap');
+
+/* GENERAL */
+body {
+    font-family: 'Poppins', sans-serif;
+    font-style: italic;
+    background-color: #222A59 !important;
+    color: white !important;
+    margin: 0;
+    padding: 0;
+}
+
+/* TIPOGRAFÍA */
+h1, h2, h3, h4, h5 {
+    font-weight: 900;
+    font-style: italic;
+    color: white !important;
+}
+
+/* NAVBAR */
+.navbar {
+    background-color: #222A59 !important;
+}
+
+.navbar-brand, .nav-link {
+    color: white !important;
+}
+
+/* BOTONES */
+.btn-primary {
+    /*background-color: #EB7DBF !important;
+    border-color: #EB7DBF !important;*/
+    background-color: #c3c840 !important;
+    border-color: #c3c840 !important;
+}
+
+.btn-primary:hover {
+    /*background-color: #d96aa8 !important;
+    border-color: #d96aa8 !important;*/
+    background-color: #c3c840 !important;
+    border-color: #c3c840 !important;
+}
+
+/* HEADER CON IMAGEN */
+header {
+    background: url('/static/img/header-bg.png') no-repeat center center;
+    background-size: cover;
+    padding: 5rem 0;
+    text-align: center;
+}
+
+/* FEATURES */
+.feature {
+ /*background-color: #EB7DBF !important; */
+ background-color: #c3c840 !important;
+   
+}
+
+/* SECCIONES */
+section {
+    color: black !important;
+}
+
+/* FOOTER */
+footer {
+    background-color: #222A59 !important;
+    color: white !important;
+}
+
+/*CONTRASEÑA */ 
+.password-container {
+  position: relative;
+}
+
+.password-container .toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #EB7DBF; /* color secundario de tu paleta */
+  z-index: 2;
+}
+
+.password-container input {
+  padding-right: 40px; /* espacio para que el ojo no se superponga con el texto */
+}
+
+/* Registro Persona */
+
+#mensaje-exito {
+    background-color: #EB7DBF;
+    color: white;
+    font-style: italic;
+    font-weight: bold;
+    animation: fadeIn 1s ease-in-out;
+    transition: opacity 0.5s ease;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+

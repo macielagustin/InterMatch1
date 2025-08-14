@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Empresas Exportadoras - InterMatch</title>
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #222A59;
+            color: white;
+            font-family: 'Thin Thin italic', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #EB7DBF;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            font-family: 'Black Black italic', sans-serif;
+            color: #EB7DBF;
+        }
+
+        .panel-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #1A2042;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #EB7DBF;
+            color: #222A59;
+            font-weight: bold;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+        }
+
+        .empresa-card {
+            background-color: #1A2042;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .empresa-card h3 {
+            margin-top: 0;
+            color: #EB7DBF;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Empresas Exportadoras Disponibles</h1>
+    </header>
+
+    <div class="panel-container">
+        <div class="sidebar">
+            <a href="{% url 'panel_importador' %}">Volver al panel</a>
+            <a href="{% url 'perfil_importador' %}">Ver perfil</a>
+            <a href="{% url 'editar_importador' %}">Editar datos</a>
+            <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
+        </div>
+
+        <div class="content">
+            {% for empresa in empresas %}
+            <div class="empresa-card">
+                <h3>{{ empresa.razon_social }}</h3>
+                <p><strong>Rubro:</strong> {{ empresa.rubro.all|join:", " }}</p>
+                <p><strong>Provincia:</strong> {{ empresa.provincia.nombre }}</p>
+                <p><strong>Localidad:</strong> {{ empresa.localidad.nombre }}</p>
+                <p><strong>Certificaciones:</strong> {{ empresa.certificaciones.all|join:", " }}</p>
+                <p><strong>Capacidad productiva mensual:</strong> {{ empresa.capacidad_productiva_mensual }}</p>
+                <p><strong>Exporta actualmente:</strong> {{ empresa.exporta_actualmente|yesno:"Sí,No" }}</p>
+                <a href="{% url 'detalle_empresa' empresa.empresa_id %}" class="boton-accion">Ver más</a>
+            </div>
+            {% empty %}
+            <p>No se encontraron empresas registradas.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

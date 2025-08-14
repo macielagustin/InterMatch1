@@ -1,0 +1,64 @@
+{% extends 'gestion/base_admin.html' %}
+
+{% block title %}Panel del Administrador{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-5">Panel Principal del Administrador</h2>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    <!-- Gestionar Usuarios -->
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">👤 Gestionar Usuarios</h5>
+                <p class="card-text">Registrar, editar o eliminar empresas e importadores.</p>
+                <a href="{% url 'lista_usuarios_admin' %}" class="btn btn-outline-primary w-100">Acceder</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gestionar Reuniones -->
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">🗓️ Gestionar Reuniones</h5>
+                <p class="card-text">Ver y supervisar todas las reuniones registradas.</p>
+                <a href="{% url 'gestionar_reuniones' %}" class="btn btn-outline-success w-100">Acceder</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Definir Período de Inscripción -->
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">📅 Período de Inscripción</h5>
+                <p class="card-text">Configurar fechas de registro para empresas e importadores.</p>
+                <a href="{% url 'definir_inscripcion' %}" class="btn btn-outline-warning w-100">Acceder</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gestionar Fechas Disponibles -->
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">🗓️ Fechas Disponibles</h5>
+                <p class="card-text">Agregar, editar o eliminar fechas habilitadas para reuniones.</p>
+                <a href="{% url 'gestionar_fechas' %}" class="btn btn-outline-info w-100">Acceder</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gestionar Horarios -->
+<div class="col">
+    <div class="card h-100 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">🕒 Gestionar Horarios</h5>
+            <p class="card-text">Agregar, editar o eliminar horarios disponibles para reuniones.</p>
+            <a href="{% url 'gestionar_horarios' %}" class="btn btn-outline-info w-100">Acceder</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

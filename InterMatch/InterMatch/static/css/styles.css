@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@1,100;1,900&display=swap');
+
+/* GENERAL */
+body {
+    font-family: 'Poppins', sans-serif;
+    font-style: italic;
+    background-color: #222A59 !important;
+    color: white !important;
+    margin: 0;
+    padding: 0;
+}
+
+/* TIPOGRAFÍA */
+h1, h2, h3, h4, h5 {
+    font-weight: 900;
+    font-style: italic;
+    color: white !important;
+}
+
+/* NAVBAR */
+.navbar {
+    background-color: #222A59 !important;
+}
+
+.navbar-brand, .nav-link {
+    color: white !important;
+}
+
+/* BOTONES */
+.btn-primary {
+    background-color: #EB7DBF !important;
+    border-color: #EB7DBF !important;
+}
+
+.btn-primary:hover {
+    background-color: #d96aa8 !important;
+    border-color: #d96aa8 !important;
+}
+
+/* HEADER CON IMAGEN */
+header {
+    background: url('/static/img/header-bg.jpg') no-repeat center center;
+    background-size: cover;
+    padding: 5rem 0;
+    text-align: center;
+}
+
+/* FEATURES */
+.feature {
+    background-color: #EB7DBF !important;
+}
+
+/* SECCIONES */
+section {
+    color: white !important;
+}
+
+/* FOOTER */
+footer {
+    background-color: #222A59 !important;
+    color: white !important;
+}

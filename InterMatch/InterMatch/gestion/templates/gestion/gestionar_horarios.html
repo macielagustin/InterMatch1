@@ -1,0 +1,38 @@
+{% extends 'gestion/base_admin.html' %}
+{% block title %}Gestionar Horarios{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">🕒 Horarios Disponibles</h2>
+
+<form method="post" class="mb-4">
+    {% csrf_token %}
+    <div class="row g-3">
+        <div class="col-md-4">
+            {{ form.hora.label_tag }} {{ form.hora }}
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-success w-100">Agregar Horario</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped mt-4">
+    <thead>
+        <tr>
+            <th>Horario</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for horario in horarios %}
+        <tr>
+            <td>{{ horario.hora|time:"H:i" }}</td>
+            <td>
+                <a href="{% url 'editar_horario' horario.id %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'eliminar_horario' horario.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,46 @@
+<!-- gestion/admin/gestionar_fechas.html -->
+{% extends 'gestion/base_admin.html' %}
+
+{% block title %}Gestionar Fechas Disponibles{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Gestionar Fechas Disponibles</h2>
+
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                {{ form.fecha }}
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success">Agregar Fecha</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for f in fechas %}
+            <tr>
+                <td>{{ f.fecha }}</td>
+                <td>
+                    <a href="{% url 'editar_fecha' f.id %}" class="btn btn-primary btn-sm">Editar</a>
+                    <a href="{% url 'eliminar_fecha' f.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No hay fechas disponibles.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

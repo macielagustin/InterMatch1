@@ -1,0 +1,21 @@
+{% extends 'gestion/base_admin.html' %}
+{% block title %}Editar Horario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card p-4">
+        <h3 class="mb-4">✏️ Editar Horario</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.hora.label_tag }} {{ form.hora }}
+                {% if form.hora.errors %}
+                    <div class="text-danger">{{ form.hora.errors }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a href="{% url 'gestionar_horarios' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

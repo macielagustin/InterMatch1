@@ -1,0 +1,17 @@
+{% extends 'gestion/base_admin.html' %}
+{% block title %}Eliminar Horario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card p-4">
+        <h3 class="mb-4 text-danger">⚠️ Confirmar Eliminación</h3>
+        <p>¿Estás seguro de que deseas eliminar el horario <strong>{{ horario.hora|time:"H:i" }}</strong>?</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <a href="{% url 'gestionar_horarios' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

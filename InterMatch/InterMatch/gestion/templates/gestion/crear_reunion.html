@@ -1,0 +1,36 @@
+{% extends "gestion/base.html" %}
+
+{% block title %}Agendar Reunión{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card p-4">
+        <h2 class="mb-3">Agendar reunión con {{ nombre_receptor }}</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- Horario disponible -->
+            <div class="mb-3">
+                <label for="id_horario" class="form-label">Seleccionar horario</label>
+                {{ form.horario }}
+                {% if form.horario.errors %}
+                    <div class="text-danger">{{ form.horario.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Mensaje opcional -->
+            <div class="mb-3">
+                <label for="id_mensaje" class="form-label">Mensaje (opcional)</label>
+                {{ form.mensaje }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Confirmar Reunión</button>
+            <a href="{% url 'panel_empresa' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+
