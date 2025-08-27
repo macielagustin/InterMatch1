@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,116 +8,89 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
 
     <style>
+        body {
+            background-color: #222A59;
+            color: white;
+            font-family: 'Thin Thin italic', sans-serif;
+        }
+
+        h2 {
+            font-family: 'Black Black italic', sans-serif;
+            color: #EB7DBF;
+        }
+
         #mensaje-exito {
             background-color: #EB7DBF;
             color: white;
             font-style: italic;
             font-weight: bold;
             animation: fadeIn 1s ease-in-out;
-            transition: opacity 0.5s ease;
+            border-radius: 10px;
         }
 
         @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-
-        body {
-            background-color: #222A59;
+        .option-card {
+            width: 220px;
+            height: 220px;
+            background: #1A2042;
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
             color: white;
-            font-family: 'Poppins', sans-serif;
-            font-style: italic;
-        }
-
-
-        .container-center {
-            padding-top: 80px;
-            padding-bottom: 80px;
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-
-        .btn-container {
-            display: flex;
-            gap: 40px;
-            margin-top: 2rem;
-        }
-
-        .btn-square {
-            width: 180px;
-            height: 180px;
-            font-size: 1.25rem;
-            font-weight: bold;
-            display: flex;
             justify-content: center;
-            align-items: center;
-            border-radius: 1rem;
-            text-align: center;
-            padding: 20px;
-            text-wrap: wrap;
-            word-break: break-word;
-            max-width: 200px;
         }
 
-        .btn-empresa {
-            background-color: #EB7DBF;
-            color: white;
-            border: none;
+        .option-card i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #EB7DBF;
         }
 
-        .btn-importador {
-            background-color: transparent;
-            color: white;
-            border: 2px solid #EB7DBF;
+        .option-card strong {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
         }
 
-        .btn-square:hover {
-            transform: scale(1.05);
-            transition: 0.3s;
+        .option-card small {
+            font-size: 0.8rem;
+            color: #cfcfcf;
         }
 
-        .card-descripcion {
-            font-size: 0.85rem;
-            font-family: 'Thin Thin italic', sans-serif;
-            font-style: italic;
-            line-height: 1.2;
-            margin-top: 8px;
+        .option-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: #EB7DBF;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
         }
     </style>
 </head>
-
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg" style="background-color:#1A2042;">
         <div class="container px-5">
-            <a class="navbar-brand" href="{% url 'inicio' %}">InterMatch</a>
+            <a class="navbar-brand text-white" href="{% url 'inicio' %}">InterMatch</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Sobre Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'inicio' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Sobre Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#contacto">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'login' %}">Login</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
 
     <!-- MENSAJE DE CONFIRMACIÓN -->
     <div class="container text-center mt-4">
@@ -127,37 +99,30 @@
         </div>
     </div>
 
-
-
     <!-- SELECCIÓN -->
-    <div class="container-center text-center">
-        <h2 class="mb-3" style="color: #EB7DBF;">¿Cómo te querés registrar?</h2>
-        <p class="mb-4" style="max-width: 600px; margin: auto;">
+    <div class="container text-center py-5">
+        <h2 class="mb-3">¿Cómo te querés registrar?</h2>
+        <p class="mb-5" style="max-width: 600px; margin: auto;">
             Seleccioná una de las siguientes opciones según el perfil que mejor represente tu actividad:
         </p>
 
-        <div class="d-flex flex-column flex-md-row justify-content-center gap-4 mt-5">
-
-            <a href="{% url 'registro_empresa' usuario_id=usuario_id %}"
-                class="btn btn-square btn-empresa d-flex flex-column justify-content-center align-items-center text-center">
-                <i class="bi bi-building" style="font-size: 2rem;"></i>
+        <div class="d-flex flex-column flex-md-row justify-content-center gap-4">
+            
+            <!-- Empresa -->
+            <a href="{% url 'registro_empresa' usuario_id=usuario_id %}" class="option-card text-decoration-none">
+                <i class="bi bi-building"></i>
                 <strong>Empresa Exportadora</strong>
                 <small>Represento una empresa que produce y vende al exterior</small>
             </a>
 
             <!-- Importador -->
-            <a href="{% url 'registro_importador' usuario_id=usuario_id %}"
-                class="btn btn-square btn-importador d-flex flex-column justify-content-center align-items-center text-center">
-                <i class="bi bi-globe" style="font-size: 2rem;"></i>
+            <a href="{% url 'registro_importador' usuario_id=usuario_id %}" class="option-card text-decoration-none">
+                <i class="bi bi-globe"></i>
                 <strong>Importador</strong>
                 <small>Busco proveedores argentinos para comprar productos</small>
             </a>
-
         </div>
-
     </div>
 
-
 </body>
-
 </html>

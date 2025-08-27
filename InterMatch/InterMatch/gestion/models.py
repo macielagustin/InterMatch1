@@ -227,3 +227,9 @@ class Reunion(models.Model):
     def __str__(self):
         return f"Reunión entre {self.empresa} y {self.importador} el {self.fecha}"
 
+class ConfiguracionSistema(models.Model):
+    permitir_registro = models.BooleanField(default= True)
+    permitir_login = models.BooleanField(default= True)
+
+    def __str__(self):
+        return "Configuracion del Sistema"

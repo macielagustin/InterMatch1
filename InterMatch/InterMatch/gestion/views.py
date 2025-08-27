@@ -6,8 +6,10 @@ from django.contrib.auth import login
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.conf import settings
 from .forms import UsuarioForm, EmpresaExportadoraForm, ImportadorForm, ReunionForm, FechaDisponibleForm, HorarioDisponibleForm
-from .models import Importador, Usuario, EmpresaCertificacion, Reunion , FechaDisponible
+from .models import Importador, Usuario, EmpresaCertificacion, Reunion , FechaDisponible, ConfiguracionSistema
+from django.core.mail import send_mail, EmailMessage
 import openpyxl
 
 
@@ -26,23 +28,30 @@ from django.contrib.auth.hashers import check_password
 from gestion.models import Usuario
 
 def login_view(request):
+    config = ConfiguracionSistema.objects.first()
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-
         try:
             user = Usuario.objects.get(username=username)
-            
+
+            # 🔐 Bloquear login solo para NO administradores si está desactivado
+            if config and not config.permitir_login and user.rol != 'Administrador':
+                return render(request, 'gestion/login_desactivado.html')
+
             if check_password(password, user.password):
                 print("Login correcto")
-                # 🔑 LOGUEO REAL DE DJANGO
+
+                # Django login
                 login(request, user)
 
+                # Guardar info en sesión
                 request.session['usuario_id'] = user.usuario_id
                 request.session['rol'] = user.rol
 
-                # Redirigir según el rol
+                # Redirección por rol
                 if user.rol == 'Administrador':
                     return redirect('panel_admin')
                 elif user.rol == 'Empresa Exportadora':
@@ -52,8 +61,8 @@ def login_view(request):
                     except EmpresaExportadora.DoesNotExist:
                         return redirect('registro_empresa', usuario_id=user.usuario_id)
                 elif user.rol == 'Importador':
+                    from .models import Importador
                     try:
-                        from .models import Importador
                         Importador.objects.get(usuario=user)
                         return redirect('panel_importador')
                     except Importador.DoesNotExist:
@@ -62,6 +71,7 @@ def login_view(request):
                     return redirect('inicio')
             else:
                 return render(request, 'gestion/login.html', {'error': 'Usuario o contraseña incorrectos.'})
+        
         except Usuario.DoesNotExist:
             return render(request, 'gestion/login.html', {'error': 'Usuario o contraseña incorrectos.'})
 
@@ -71,8 +81,30 @@ def logout_view(request):
     request.session.flush()  # Elimina toda la sesión
     return redirect('login')  # Redirige al login o al inicio, según prefieras
 
+#######################################################
+############ REGISTROS ###############################
+#####################################################
+
+def enviar_correo_confirmacion_registro(destinatario_email, nombre_usuario, tipo_usuario):
+    asunto = f"Confirmacion de Registro - InterMatch"
+    mensaje = f"""
+Hola {nombre_usuario},
+
+Tu registro como {tipo_usuario} en InterMatch se ha completado exitosamente.
+
+Ya puedes ingresar a tu panel para comenzar a usar la plataforma.
+
+¡Gracias por unirte a Nosotros!
+
+Atte: El equipo de InterMatch
+"""
+    remitente = settings.DEFAULT_FROM_EMAIL
+    send_mail(asunto, mensaje, remitente, [destinatario_email])
 
 def registro_persona(request):
+    config = ConfiguracionSistema.objects.first()
+    if config and not config.permitir_registro:
+        return render (request, 'gestion/fuera_de_periodo.html')
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
@@ -103,6 +135,12 @@ def registro_empresa(request, usuario_id):
 
             usuario.rol = 'Empresa Exportadora'
             usuario.save()
+
+            enviar_correo_confirmacion_registro(
+                destinatario_email= usuario.email,
+                nombre_usuario=usuario.nombre,
+                tipo_usuario='Empresa Exportadora'
+            )
 
             return redirect('registro_exitoso')
         else:
@@ -166,6 +204,12 @@ def registro_importador(request, usuario_id):
             usuario.rol = 'Importador'
             usuario.save()
 
+            enviar_correo_confirmacion_registro(
+                destinatario_email= usuario.email,
+                nombre_usuario=usuario.nombre,
+                tipo_usuario='Importador'
+            )
+
             return redirect('registro_exitoso')
         else:
             print("errores en el formulario:", form.errors)
@@ -203,17 +247,17 @@ def localidades_por_provincia(request):
 
 @login_required(login_url='login')
 def panel_empresa_view(request):
-    print("Usuario en panel_empresa:", request.user)
-    print("¿Autenticado?", request.user.is_authenticated)
-
     try:
-        empresa = EmpresaExportadora.objects.get(usuario=request.user)
-        nombre_empresa = empresa.razon_social
+        empresa = (EmpresaExportadora.objects
+                   .select_related('rubro', 'provincia', 'localidad')      # FKs
+                   .prefetch_related('certificaciones', 'paises_exporta')  # M2M
+                   .get(usuario=request.user))
     except EmpresaExportadora.DoesNotExist:
         return redirect('registro_empresa', usuario_id=request.user.id)
 
     return render(request, 'gestion/panel_empresa.html', {
-        'nombre_empresa': nombre_empresa,
+        'empresa': empresa,
+        'nombre_empresa': empresa.razon_social,  # por si lo usás en el H1
     })
 
 @login_required
@@ -226,12 +270,18 @@ def ver_perfil_empresa(request):
 @login_required
 def editar_empresa(request):
     usuario_id = request.session.get('usuario_id')
-    empresa = EmpresaExportadora.objects.get(usuario_id=usuario_id)
+    empresa = get_object_or_404(EmpresaExportadora, usuario_id=usuario_id)
 
     if request.method == 'POST':
-        empresa.telefono = request.POST.get('telefono')
-        empresa.capacidad_productiva = request.POST.get('capacidad_productiva')
-        empresa.sitio_web = request.POST.get('sitio_web')
+        empresa.telefono = request.POST.get('telefono') or ""
+        empresa.capacidad_productiva = request.POST.get('capacidad_productiva') or None
+        empresa.sitio_web = request.POST.get('sitio_web') or ""
+        empresa.comentarios = request.POST.get('comentarios') or ""
+
+        # archivo (brochure)
+        if 'brochure' in request.FILES and request.FILES['brochure']:
+            empresa.brochure = request.FILES['brochure']
+
         empresa.save()
         return redirect('ver_perfil_empresa')
 
@@ -280,25 +330,57 @@ def perfil_importador(request):
         'importador': importador
     })
 
+def _to_int_or_none(val):
+    try:
+        return int(val) if str(val).strip() != "" else None
+    except (TypeError, ValueError):
+        return None
+
 @login_required
 def editar_importador(request):
+    # Usuario desde la sesión (tu esquema actual)
     usuario_id = request.session.get('usuario_id')
-    usuario = Usuario.objects.get(usuario_id=usuario_id)
-    importador = Importador.objects.filter(usuario=usuario).first()
+    usuario = get_object_or_404(Usuario, usuario_id=usuario_id)
 
+    importador = Importador.objects.filter(usuario=usuario).first()
     if not importador:
         return redirect('registro_importador', usuario_id=usuario.id)
 
     if request.method == 'POST':
-        importador.telefono = request.POST.get('telefono')
-        importador.cantidad_empleados = request.POST.get('cantidad_empleados')
-        importador.sitio_web = request.POST.get('sitio_web')
-        importador.save()
+        # Campos simples
+        importador.telefono = request.POST.get('telefono') or ""
+        importador.sitio_web = request.POST.get('sitio_web') or ""
+        importador.comentarios = request.POST.get('comentarios') or ""
+
+        # Empleados (tu modelo usa 'cantidad_empleados'; si tenés 'empleados', ajustá aquí)
+        cant = request.POST.get('cantidad_empleados')
+        importador.cantidad_empleados = _to_int_or_none(cant)
+
+        # Archivo
+        if 'logo' in request.FILES and request.FILES['logo']:
+            importador.logo = request.FILES['logo']
+
+        importador.save()  # guardar antes de M2M
+
+        # ManyToMany (asegurate que en el form los name= coincidan)
+        rubros_ids = request.POST.getlist('rubros')
+        paises_ids = request.POST.getlist('paises_comercializa')
+
+        if rubros_ids is not None:
+            importador.rubros.set(Rubro.objects.filter(id__in=rubros_ids))
+        if paises_ids is not None:
+            importador.paises_comercializa.set(Pais.objects.filter(id__in=paises_ids))
+
+        messages.success(request, "¡Perfil actualizado correctamente!")
         return redirect('perfil_importador')
 
-    return render(request, 'gestion/editar_importador.html', {
-        'importador': importador
-    })
+    # GET → solo los catálogos necesarios para los M2M que editás
+    contexto = {
+        'importador': importador,
+        'rubros': Rubro.objects.all().order_by('nombre'),
+        'paises': Pais.objects.all().order_by('nombre'),
+    }
+    return render(request, 'gestion/editar_importador.html', contexto)
 
 @login_required
 def empresas_disponibles(request):
@@ -501,6 +583,70 @@ def exportar_reuniones_excel(request):
     wb.save(response)
     return response
 
+def configuracion_sistema_view(request):
+    if request.session.get('rol') != 'Administrador':
+        return redirect('login')
+
+    config = ConfiguracionSistema.objects.first()
+    mensaje = None
+
+    if request.method == 'POST':
+        permitir_registro = bool(request.POST.get('permitir_registro'))
+        permitir_login = bool(request.POST.get('permitir_login'))
+
+        if config:
+            config.permitir_registro = permitir_registro
+            config.permitir_login = permitir_login
+            config.save()
+            mensaje = "Configuración actualizada correctamente."
+        else:
+            ConfiguracionSistema.objects.create(
+                permitir_registro=permitir_registro,
+                permitir_login=permitir_login
+            )
+            mensaje = "Configuración creada correctamente."
+
+    return render(request, 'gestion/configuracion_sistema.html', {
+        'config': config,
+        'mensaje': mensaje
+    })
+
+def difusion_admin_view(request):
+    if request.session.get('rol') != 'Administrador':
+        return redirect('login')
+
+    mensaje_enviado = False
+
+    if request.method == 'POST':
+        asunto = request.POST.get('asunto')
+        cuerpo = request.POST.get('mensaje')
+        destinatario = request.POST.get('destinatario')
+
+        # Filtrar destinatarios según lo elegido
+        if destinatario == 'Empresas':
+            usuarios = Usuario.objects.filter(rol='Empresa Exportadora')
+        elif destinatario == 'Importadores':
+            usuarios = Usuario.objects.filter(rol='Importador')
+        else:
+            usuarios = Usuario.objects.exclude(rol='Administrador')  # Todos menos admin
+
+        emails = [u.email for u in usuarios]
+
+        # Enviar solo si hay emails válidos
+        if emails:
+            email = EmailMessage(
+                subject=asunto,
+                body=cuerpo,
+                from_email='andriuolo27@gmail.com',
+                to=['difusion@intermatch.com'],
+                bcc=emails
+            )
+            email.send(fail_silently=False)
+
+    return render(request, 'gestion/admin/difusion_admin.html', {
+        'mensaje_enviado': mensaje_enviado
+    })
+
 
 
 ######################################
@@ -542,6 +688,38 @@ def crear_reunion(request, tipo_receptor, receptor_id):
             nueva_reunion.fecha = fecha_reunion  # ⏰ Fecha fija configurada
             nueva_reunion.save()
             form.save_m2m()
+
+            from django.core.mail import send_mail
+            from django.conf import settings
+
+            asunto = 'Confirmacion de Reunion - InterMatch'
+            mensaje = f'''
+        Hola!
+
+        Se ha confirmado la reunion entre:
+        Empresa: {empresa.razon_social}
+        Importador: {importador.razon_social}
+        Fecha: {nueva_reunion.fecha.strftime('%d/%m/%Y')}
+        Horario: {nueva_reunion.horario.hora.strftime('%H:%M')}
+        Mensaje: {nueva_reunion.mensaje or "Sin Mensaje"}
+
+        Gracias por utilizar InterMatch.
+                '''
+            
+            destinatarios = [
+                empresa.usuario.email,
+                importador.usuario.email,
+                'andriuolo27@gmail.com'
+            ]
+            
+            send_mail(
+                    asunto,
+                    mensaje,
+                    settings.DEFAULT_FROM_EMAIL,
+                    destinatarios,
+                    fail_silently=False,
+            )
+
             return redirect('reunion_exitosa')
         else:
             print("❌ Errores en el formulario:", form.errors)
@@ -566,6 +744,15 @@ def crear_reunion(request, tipo_receptor, receptor_id):
 def reunion_exitosa(request):
     return render(request, 'gestion/reunion_exitosa.html')
 
+def enviar_correo_prueba(request):
+    send_mail(
+        subject='prueba de correo desde intermatch',
+        message='esto es un mensaje de prueba',
+        from_email= None,
+        recipient_list=['andriuolo27@gmail.com'],
+        fail_silently=False,
+    )
+    return HttpResponse("Correo Enviado!")
 
 
 

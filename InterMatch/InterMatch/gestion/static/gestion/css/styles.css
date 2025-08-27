@@ -28,16 +28,12 @@ h1, h2, h3, h4, h5 {
 }
 
 /* BOTONES */
-.btn-primary {
-    /*background-color: #EB7DBF !important;
-    border-color: #EB7DBF !important;*/
+.btn.btn-primary {
     background-color: #c3c840 !important;
     border-color: #c3c840 !important;
 }
 
-.btn-primary:hover {
-    /*background-color: #d96aa8 !important;
-    border-color: #d96aa8 !important;*/
+.btn.btn-primary:hover {
     background-color: #c3c840 !important;
     border-color: #c3c840 !important;
 }
@@ -52,7 +48,7 @@ header {
 
 /* FEATURES */
 .feature {
- /*background-color: #EB7DBF !important; */
+ /*background-color: #c3c840 !important; */
  background-color: #c3c840 !important;
    
 }
@@ -82,7 +78,7 @@ footer {
   border: none;
   cursor: pointer;
   font-size: 18px;
-  color: #EB7DBF; /* color secundario de tu paleta */
+  color: #c3c840; /* color secundario de tu paleta */
   z-index: 2;
 }
 
@@ -93,7 +89,7 @@ footer {
 /* Registro Persona */
 
 #mensaje-exito {
-    background-color: #EB7DBF;
+    background-color: #c3c840;
     color: white;
     font-style: italic;
     font-weight: bold;

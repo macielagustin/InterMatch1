@@ -1,128 +1,360 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Editar Importador</title>
     <style>
-        body {
-            background-color: #222A59;
-            color: white;
-            font-family: 'Thin Thin italic', sans-serif;
-            margin: 0;
-            padding: 0;
+        :root {
+            --bg: #222A59;
+            --panel: #1A2042;
+            --accent: #EB7DBF;
+            --ink: #fff;
+            --muted: #cfd3ff;
+            --field: #0f1330;
         }
 
+        body {
+            background-color: var(--bg);
+            color: var(--ink);
+            font-family: 'Thin Thin italic', sans-serif;
+            margin: 0;
+        }
+
+        /* Header oscuro + título rosa */
         header {
-            background-color: #EB7DBF;
+            background-color: var(--panel);
             padding: 20px;
             text-align: center;
         }
 
-        h1, h2 {
+        header h1,
+        h2 {
             font-family: 'Black Black italic', sans-serif;
-            color: #EB7DBF;
+            color: var(--accent);
+            margin: 0;
         }
 
+        /* Layout con sidebar (como venías usando) */
         .panel-container {
             display: flex;
             min-height: 100vh;
         }
 
         .sidebar {
-            width: 250px;
-            background-color: #1A2042;
+            width: 260px;
+            background-color: var(--panel);
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
         }
 
         .sidebar a {
-            color: white;
+            color: #fff;
             text-decoration: none;
-            font-size: 1.1em;
-            padding: 10px;
-            border-radius: 8px;
-            transition: background 0.3s;
+            font-size: 1.05rem;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: .25s;
+            display: block;
         }
 
         .sidebar a:hover {
-            background-color: #EB7DBF;
-            color: #222A59;
-            font-weight: bold;
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: 700;
         }
 
         .content {
-            flex-grow: 1;
+            flex: 1;
             padding: 40px;
         }
 
+        .form-card {
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 16px;
+            padding: 22px;
+            max-width: 920px;
+        }
+
+        .section-title {
+            color: var(--accent);
+            font-family: 'Black Black italic', sans-serif;
+            margin: 0 0 14px 0;
+        }
+
+        /* Campos */
         label {
             display: block;
-            margin-top: 15px;
-            font-weight: bold;
+            margin: 14px 0 6px;
+            font-weight: 700;
         }
 
         input[type="text"],
-        input[type="url"] {
+        input[type="tel"],
+        input[type="url"],
+        input[type="number"],
+        select,
+        textarea {
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: none;
-            border-radius: 8px;
-            background-color: #eee;
-            font-family: 'Thin Thin italic', sans-serif;
+            padding: 10px 12px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--field);
+            color: #fff;
+            font: inherit;
         }
 
-        button[type="submit"] {
-            margin-top: 20px;
-            background-color: #EB7DBF;
-            color: white;
-            padding: 10px 25px;
-            border: none;
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(235, 125, 191, .35);
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: .9rem;
+            margin-top: 4px;
+        }
+
+        /* Multi en líneas bonitas en ver */
+        .inline-help {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        /* Botones */
+        .actions {
+            margin-top: 22px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border: 0;
+            padding: 10px 18px;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 1em;
+            font-weight: 700;
         }
 
-        button[type="submit"]:hover {
-            background-color: #f299d3;
+        .btn-primary:hover {
+            filter: brightness(1.08);
+        }
+
+        /* Logo preview */
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-preview {
+            width: 84px;
+            height: 84px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #0b0f2b;
+            border: 2px solid rgba(235, 125, 191, .45);
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                position: static;
+                height: auto;
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, .08);
+            }
+
+            .panel-container {
+                flex-direction: column;
+            }
+
+            .content {
+                padding: 24px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<header>
-    <h1>Editar Importador</h1>
-</header>
+    <header>
+        <h1>Editar Importador</h1>
+    </header>
 
-<div class="panel-container">
-    <div class="sidebar">
-        <a href="{% url 'perfil_importador' %}">Ver perfil</a>
-        <a href="{% url 'editar_importador' %}">Editar datos</a>
-        <a href="{% url 'empresas_disponibles' %}">Ver Empresas</a>
-        <a href="#">Reuniones</a>
-        <a href="#">Exportar</a>
-        <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
+    <div class="panel-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <a href="{% url 'perfil_importador' %}">Ver perfil</a>
+            <a href="{% url 'editar_importador' %}">Editar datos</a>
+            <a href="{% url 'empresas_disponibles' %}">Ver Empresas</a>
+            <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
+        </nav>
+
+        <!-- Content -->
+        <main class="content">
+            <h2 class="section-title">Editar datos del importador</h2>
+
+            <div class="form-card">
+                {% if form and form.errors %}
+                <div style="background:#62254d;padding:10px 12px;border-radius:8px;margin-bottom:12px;">
+                    <strong>Revisá los campos:</strong>
+                    <ul style="margin:8px 0 0 18px;">
+                        {% for field in form %}
+                        {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Contacto -->
+                    <h3 class="section-title">Contacto</h3>
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" name="telefono" id="telefono" value="{{ importador.telefono }}"
+                        placeholder="+54 9 11 5555-5555" pattern="^\+?[0-9\s\-()]{7,20}$">
+                    <div class="hint">Permitidos números, espacios, guiones y paréntesis.</div>
+
+                    <label for="empleados">Cantidad de empleados</label>
+                    <input type="number" name="cantidad_empleados" id="empleados"
+                        value="{{ importador.cantidad_empleados }}" min="1" max="99999">
+
+                    <label for="sitio_web">Sitio Web</label>
+                    <input type="url" name="sitio_web" id="sitio_web" value="{{ importador.sitio_web }}"
+                        placeholder="https://...">
+
+                    <!-- Logo con preview -->
+                    <label for="logo">Logo</label>
+                    <div class="logo-wrap">
+                        <img class="logo-preview" id="logoPreview"
+                            src="{% if importador.logo %}{{ importador.logo.url }}{% else %}{% static 'img/logo_placeholder.png' %}{% endif %}"
+                            alt="Logo">
+                        <input type="file" name="logo" id="logo" accept="image/*">
+                    </div>
+                    <div class="hint">Formatos: JPG/PNG/WEBP. Sugerido &lt; 2MB.</div>
+
+                    <!-- Preferencias -->
+                    <h3 class="section-title" style="margin-top:18px;">Preferencias comerciales</h3>
+
+                    <label for="idiomas">Idiomas para negociar</label>
+                    <select name="idiomas" id="idiomas" multiple>
+                        {% for idioma in idiomas %}
+                        <option value="{{ idiomas.id }}" {% if idiomas in importador.idiomas.all %}selected{% endif %}>
+                            {{ idiomas.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="inline-help">Mantener presionada CTRL/CMD para seleccionar múltiples opciones.</div>
+
+                    <label for="rubros">Rubros de interés</label>
+                    {% if form and form.rubros %}
+                    {{ form.rubros }}
+                    {% else %}
+                    <select name="rubros" id="rubros" multiple>
+                        {% for r in rubros %}
+                        <option value="{{ r.id }}" {% if r in importador.rubros.all %}selected{% endif %}>
+                            {{ r.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+
+                    <label for="tipos_proveedor">Tipo de proveedor de interés</label>
+                    <select name="tipos_proveedor" id="tipos_proveedor" multiple>
+                        {% for t in tipos_proveedor %}
+                        <option value="{{ t.id }}" {% if t in importador.tipos_proveedor.all %}selected{% endif %}>
+                            {{ t.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+
+
+                    <label for="paises_comercializa">Países donde comercializa actualmente</label>
+                    <select name="paises_comercializa" id="paises_comercializa" multiple>
+                        {% for p in paises %}
+                        <option value="{{ p.id }}" {% if p in importador.paises_comercializa.all %}selected{% endif %}>
+                            {{ p.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+
+
+                    <label for="comentarios">Comentarios</label>
+                    <textarea name="comentarios" id="comentarios"
+                        placeholder="Notas internas o preferencias adicionales...">{{ importador.comentarios }}</textarea>
+
+                    <div class="actions">
+                        <button type="submit" class="btn-primary">Guardar cambios</button>
+                        <a href="{% url 'perfil_importador' %}" class="inline-help">Cancelar y volver al perfil</a>
+                    </div>
+                </form>
+            </div>
+        </main>
     </div>
 
-    <div class="content">
-        <h2>Editar Datos del Importador</h2>
-        <form method="post">
-            {% csrf_token %}
-            <label for="telefono">Teléfono:</label>
-            <input type="text" name="telefono" id="telefono" value="{{ importador.telefono }}">
+    <script>
+        // Preview del logo
+        const logoInput = document.getElementById('logo');
+        const logoPreview = document.getElementById('logoPreview');
+        if (logoInput && logoPreview) {
+            logoInput.addEventListener('change', (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const url = URL.createObjectURL(file);
+                logoPreview.src = url;
+            });
+        }
 
-            <label for="cantidad_empleados">Cantidad de Empleados:</label>
-            <input type="text" name="cantidad_empleados" id="cantidad_empleados" value="{{ importador.cantidad_empleados }}">
+        // Cascada País -> Provincia -> Localidad (si querés dinamizar)
+        const paisSel = document.getElementById('pais_origen');
+        const provSel = document.getElementById('provincia');
+        const locSel = document.getElementById('localidad');
 
-            <label for="sitio_web">Sitio Web:</label>
-            <input type="url" name="sitio_web" id="sitio_web" value="{{ importador.sitio_web }}">
+        function fillSelect(sel, items, placeholder) {
+            sel.innerHTML = '';
+            const ph = document.createElement('option');
+            ph.value = ''; ph.textContent = placeholder || 'Seleccionar';
+            sel.appendChild(ph);
+            items.forEach(it => {
+                const op = document.createElement('option');
+                op.value = it.id; op.textContent = it.nombre;
+                sel.appendChild(op);
+            });
+        }
 
-            <button type="submit">Guardar cambios</button>
-        </form>
-    </div>
-</div>
+        // Descomentar si tenés endpoints:
+        // if (paisSel && provSel && locSel){
+        //   paisSel.addEventListener('change', ()=>{
+        //     fetch(`/api/provincias/?pais=${paisSel.value}`)
+        //       .then(r=>r.json()).then(data=>{ fillSelect(provSel, data, 'Provincia / Estado'); fillSelect(locSel, [], 'Localidad'); });
+        //   });
+        //   provSel.addEventListener('change', ()=>{
+        //     fetch(`/api/localidades/?provincia=${provSel.value}`)
+        //       .then(r=>r.json()).then(data=>{ fillSelect(locSel, data, 'Localidad'); });
+        //   });
+        // }
+    </script>
 
 </body>
+
 </html>

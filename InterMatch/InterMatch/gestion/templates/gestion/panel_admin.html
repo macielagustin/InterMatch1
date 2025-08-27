@@ -3,62 +3,79 @@
 {% block title %}Panel del Administrador{% endblock %}
 
 {% block content %}
-<h2 class="text-center mb-5">Panel Principal del Administrador</h2>
+<h2 class="text-center mb-5" style="font-family: 'Black Black italic', sans-serif; color:#EB7DBF;">
+    Panel Principal del Administrador
+</h2>
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
+
     <!-- Gestionar Usuarios -->
     <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">👤 Gestionar Usuarios</h5>
+        <div class="card h-100 shadow-sm border-0" style="background:#1A2042; color:white;">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">👤 Gestionar Usuarios</h5>
                 <p class="card-text">Registrar, editar o eliminar empresas e importadores.</p>
-                <a href="{% url 'lista_usuarios_admin' %}" class="btn btn-outline-primary w-100">Acceder</a>
+                <a href="{% url 'lista_usuarios_admin' %}" class="btn w-100" style="background:#EB7DBF; color:white;">Acceder</a>
             </div>
         </div>
     </div>
 
     <!-- Gestionar Reuniones -->
     <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">🗓️ Gestionar Reuniones</h5>
+        <div class="card h-100 shadow-sm border-0" style="background:#1A2042; color:white;">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">🗓️ Gestionar Reuniones</h5>
                 <p class="card-text">Ver y supervisar todas las reuniones registradas.</p>
-                <a href="{% url 'gestionar_reuniones' %}" class="btn btn-outline-success w-100">Acceder</a>
+                <a href="{% url 'gestionar_reuniones' %}" class="btn w-100" style="background:#EB7DBF; color:white;">Acceder</a>
             </div>
         </div>
     </div>
 
-    <!-- Definir Período de Inscripción -->
-    <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">📅 Período de Inscripción</h5>
-                <p class="card-text">Configurar fechas de registro para empresas e importadores.</p>
-                <a href="{% url 'definir_inscripcion' %}" class="btn btn-outline-warning w-100">Acceder</a>
-            </div>
-        </div>
-    </div>
 
     <!-- Gestionar Fechas Disponibles -->
     <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">🗓️ Fechas Disponibles</h5>
+        <div class="card h-100 shadow-sm border-0" style="background:#1A2042; color:white;">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">🗓️ Fechas Disponibles</h5>
                 <p class="card-text">Agregar, editar o eliminar fechas habilitadas para reuniones.</p>
-                <a href="{% url 'gestionar_fechas' %}" class="btn btn-outline-info w-100">Acceder</a>
+                <a href="{% url 'gestionar_fechas' %}" class="btn w-100" style="background:#EB7DBF; color:white;">Acceder</a>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Gestionar Horarios -->
-<div class="col">
-    <div class="card h-100 shadow-sm">
-        <div class="card-body">
-            <h5 class="card-title">🕒 Gestionar Horarios</h5>
-            <p class="card-text">Agregar, editar o eliminar horarios disponibles para reuniones.</p>
-            <a href="{% url 'gestionar_horarios' %}" class="btn btn-outline-info w-100">Acceder</a>
+    <!-- Gestionar Horarios -->
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0" style="background:#1A2042; color:white;">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">🕒 Gestionar Horarios</h5>
+                <p class="card-text">Agregar, editar o eliminar horarios disponibles para reuniones.</p>
+                <a href="{% url 'gestionar_horarios' %}" class="btn w-100" style="background:#EB7DBF; color:white;">Acceder</a>
+            </div>
         </div>
     </div>
+
+    <!-- Mensaje de Difusión -->
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0" style="background:#1A2042; color:white;">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">📩 Mensaje de Difusión</h5>
+                <p class="card-text">Envia mensajes tanto a empresas como a importadores</p>
+                <a href="{% url 'difusion_admin' %}" class="btn w-100" style="background:#EB7DBF; color:white;">Acceder</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuración del Sistema -->
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0" style="background:#1A2042; color:white;">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">🚨 Configuración del Sistema</h5>
+                <p class="card-text">Aquí podrás desactivar el periodo de registro o logueo</p>
+                <a href="{% url 'configuracion_sistema' %}" class="btn w-100" style="background:#EB7DBF; color:white;">Acceder</a>
+            </div>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
+

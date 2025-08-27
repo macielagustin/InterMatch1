@@ -9,105 +9,116 @@
 
     <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@1,900&display=swap');
-
         body {
             background-color: #222A59;
             color: white;
-            font-family: 'Poppins', sans-serif;
-            font-style: italic;
+            font-family: 'Thin Thin italic', sans-serif;
         }
 
-        label.form-label {
-            font-family: 'Poppins', sans-serif;
-            font-style: italic;
-            font-weight: 900;
-            color: white;
+        h2 {
+            font-family: 'Black Black italic', sans-serif;
+            color: #EB7DBF;
         }
 
         .form-section {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: #1A2042;
             border: 1px solid #EB7DBF;
             border-radius: 1rem;
             padding: 2rem;
-            margin-top: 2rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        label.form-label {
+            color: white;
+            font-weight: bold;
+            font-style: italic;
         }
 
         .form-control,
         .form-select {
-            background-color: #fff;
-            color: #000;
-            font-style: normal;
+            background-color: #0f1330;
+            color: white;
+            border: none;
         }
 
-        .btn-primary {
-            background-color: #EB7DBF;
+        .form-control:focus,
+        .form-select:focus {
             border-color: #EB7DBF;
+            box-shadow: 0 0 6px #EB7DBF;
+            background-color: #0f1330;
+            color: white;
         }
 
-        .btn-primary:hover {
+        .btn-submit {
+            background-color: #EB7DBF;
+            border: none;
+            font-weight: bold;
+        }
+
+        .btn-submit:hover {
             background-color: #d96aa8;
-            border-color: #d96aa8;
         }
     </style>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg">
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg" style="background-color:#1A2042;">
         <div class="container px-5">
-            <a class="navbar-brand" href="{% url 'inicio' %}">InterMatch</a>
+            <a class="navbar-brand text-white" href="{% url 'inicio' %}">InterMatch</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'inicio' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'login' %}">Login</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
+    <!-- FORMULARIO -->
     <div class="container">
-        <div class="form-section">
+        <div class="form-section shadow-lg">
             <h2 class="text-center mb-4">Registro Importador</h2>
             <form method="post" action="{% url 'registro_importador' usuario_id %}" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row g-3">
 
-                    <div class="col-md-6 mt-3">
-                        <label class="form-label" for="razon_social">Razón Social</label>
-                        <input type="text" class="form-control" id="razon_social" name="razon_social" required
-                            minlength="3" maxlength="100" pattern="^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s&.,'-]{3,100}$"
-                            placeholder="Nombre de Empresa"
-                            title="Ingrese el nombre legal de la empresa. Puede incluir letras, números y símbolos como & , . -">
+                    <!-- Razón Social -->
+                    <div class="col-md-6">
+                        <label class="form-label">Razón Social</label>
+                        <input type="text" class="form-control" name="razon_social" required>
                     </div>
 
-                    <div class="col-md-6 mt-3">
-                        <label class="form-label" for="cargo">Cargo</label>
-                        <select class="form-select" id="cargo" name="cargo" required>
+                    <!-- Cargo -->
+                    <div class="col-md-6">
+                        <label class="form-label">Cargo</label>
+                        <select class="form-select" name="cargo" required>
                             <option value="" disabled selected>Seleccione un cargo</option>
-                            <option value="Dueño">Dueño / Fundador</option>
-                            <option value="Gerente General">Gerente General</option>
-                            <option value="Director de Compras">Director de Compras</option>
-                            <option value="Responsable de Importaciones">Responsable de Importaciones</option>
-                            <option value="Jefe de Logística">Jefe de Logística</option>
-                            <option value="Asistente Comercial">Asistente Comercial</option>
-                            <option value="Encargado de Proveedores">Encargado de Proveedores</option>
-                            <option value="Otro">Otro</option>
+                            <option>Dueño / Fundador</option>
+                            <option>Gerente General</option>
+                            <option>Director de Compras</option>
+                            <option>Responsable de Importaciones</option>
+                            <option>Jefe de Logística</option>
+                            <option>Asistente Comercial</option>
+                            <option>Encargado de Proveedores</option>
+                            <option>Otro</option>
                         </select>
                     </div>
 
-                    <div class="col-md-6 mt-3">
-                        <label class="form-label" for="telefono">Teléfono</label>
-                        <input type="tel" class="form-control" id="telefono" name="telefono" required minlength="10"
-                            maxlength="20" pattern="^\+?[0-9\s-]{10,20}$" placeholder="Telefono"
-                            title="Ingrese un teléfono válido. Solo números, espacios o guiones.">
+                    <!-- Teléfono -->
+                    <div class="col-md-6">
+                        <label class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" name="telefono" required>
                     </div>
 
+                    <!-- País -->
                     <div class="col-md-6">
                         <label class="form-label">País</label>
                         <select name="pais_origen" class="form-select" required>
@@ -117,6 +128,8 @@
                             {% endfor %}
                         </select>
                     </div>
+
+                    <!-- Provincia -->
                     <div class="col-md-6">
                         <label class="form-label">Provincia / Estado</label>
                         <select name="provincia" class="form-select" required>
@@ -126,6 +139,8 @@
                             {% endfor %}
                         </select>
                     </div>
+
+                    <!-- Localidad -->
                     <div class="col-md-6">
                         <label class="form-label">Localidad</label>
                         <select name="localidad" class="form-select" required>
@@ -136,13 +151,13 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6 mt-3">
-                        <label class="form-label" for="empleados">Cantidad de empleados</label>
-                        <input type="number" class="form-control" id="empleados" name="empleados" required min="1"
-                            max="9999" placeholder="Cantidad de empleados"
-                            title="Ingrese solo números. Valor entre 1 y 9999.">
+                    <!-- Empleados -->
+                    <div class="col-md-6">
+                        <label class="form-label">Cantidad de empleados</label>
+                        <input type="number" class="form-control" name="empleados" required>
                     </div>
 
+                    <!-- Idiomas -->
                     <div class="col-md-6">
                         <label class="form-label">Idiomas para negociar</label>
                         <select class="form-select" name="idiomas" multiple required>
@@ -152,71 +167,69 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6 mt-3">
-                        <label class="form-label" for="sitio_web">Sitio web (opcional)</label>
-                        <input type="url" class="form-control" id="sitio_web" name="sitio_web"
-                            placeholder="https://www.importadora.com" pattern="https?://.+"
-                            title="Ingrese una URL válida que comience con http:// o https://">
+                    <!-- Sitio Web -->
+                    <div class="col-md-6">
+                        <label class="form-label">Sitio web (opcional)</label>
+                        <input type="url" class="form-control" name="sitio_web" placeholder="https://...">
                     </div>
 
-                    <div class="col-md-6 mt-3">
-                        <label class="form-label" for="logo">Logo de la empresa</label>
-                        <input type="file" class="form-control" id="logo" name="logo" required
-                            accept="image/png, image/jpeg, image/webp"
-                            title="Suba una imagen del logo en formato JPG, PNG o WEBP.">
-                        <small class="form-text text-muted">Formatos permitidos: JPG, PNG, WEBP. Máximo recomendado:
-                            2MB.</small>
+                    <!-- Logo -->
+                    <div class="col-md-6">
+                        <label class="form-label">Logo de la empresa</label>
+                        <input type="file" class="form-control" name="logo" accept="image/*">
                     </div>
 
+                    <!-- Tipo de Importador -->
                     <div class="col-md-6">
                         <label class="form-label">Tipo de Importador</label>
                         <select class="form-select" name="tipo_importador" required>
                             <option value="" disabled selected>Selecciona un Tipo</option>
-                            <option value="Distribuidor mayorista">Distribuidor Mayorista</option>
-                            <option value="Distribuidor minorista">Distribuidor Minorista</option>
-                            <option value="Retailer / Cadena comercial">Retailer / Cadena comercial</option>
-                            <option value="E-commerce">E-commerce</option>
-                            <option value="Broker / Agente comercial">Broker / Agente comercial</option>
-                            <option value="Otro">Otro</option>
+                            <option>Distribuidor Mayorista</option>
+                            <option>Distribuidor Minorista</option>
+                            <option>Retailer / Cadena comercial</option>
+                            <option>E-commerce</option>
+                            <option>Broker / Agente comercial</option>
+                            <option>Otro</option>
                         </select>
                     </div>
 
+                    <!-- Rubros de interés -->
                     <div class="col-md-6">
-                        <label class="form-label" for="id_rubros">Rubros de interés</label>
+                        <label class="form-label">Rubros de interés</label>
                         {{ form.rubros }}
                     </div>
 
-
-                    <div class="col-md-6 mt-3">
-                        <label class="form-label" for="paises_comercializa">Países donde comercializa
-                            actualmente</label>
-                        <select class="form-select" name="paises_comercializa" id="paises_comercializa" multiple
-                            required>
+                    <!-- Países donde comercializa -->
+                    <div class="col-md-6">
+                        <label class="form-label">Países donde comercializa actualmente</label>
+                        <select class="form-select" name="paises_comercializa" multiple required>
                             {% for pais in paises %}
                             <option value="{{ pais.id }}">{{ pais.nombre }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
-                    <div class="col-md-6 mt-3">
-                        <label class="form-label" for="experiencia_arg">¿Tiene experiencia con proveedores de
-                            Argentina?</label>
-                        <select class="form-select" id="experiencia_arg" name="experiencia_proveedores_arg" required>
+                    <!-- Experiencia con Argentina -->
+                    <div class="col-md-6">
+                        <label class="form-label">¿Experiencia con proveedores argentinos?</label>
+                        <select class="form-select" name="experiencia_proveedores_arg" required>
                             <option value="" disabled selected>Seleccionar</option>
                             <option value="true">Sí</option>
                             <option value="false">No</option>
                         </select>
                     </div>
 
+                    <!-- Tipo de proveedor -->
                     <div class="col-md-6">
                         <label class="form-label">Tipo de proveedor de interés</label>
-                        <select class="form-select" name="tipos_proveedor" id="tipos_proveedor" multiple required>
+                        <select class="form-select" name="tipos_proveedor" multiple required>
                             {% for tipo in tipos_proveedor %}
                             <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
+                    <!-- Presentación buscada -->
                     <div class="col-md-6">
                         <label class="form-label">Tipo de presentación buscada</label>
                         <select class="form-select" name="presentacion_buscada">
@@ -226,61 +239,20 @@
                             <option>No aplica</option>
                         </select>
                     </div>
-                    <div class="col-12 mt-3">
-                        <label class="form-label" for="comentarios">Comentarios adicionales (opcional)</label>
-                        <textarea class="form-control" id="comentarios" name="comentarios" rows="4" maxlength="1000"
-                            placeholder="Ingrese aquí cualquier información extra que considere relevante..."></textarea>
+
+                    <!-- Comentarios -->
+                    <div class="col-12">
+                        <label class="form-label">Comentarios adicionales (opcional)</label>
+                        <textarea class="form-control" name="comentarios" rows="4"></textarea>
                     </div>
 
                 </div>
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary px-5">Registrarse</button>
+                    <button type="submit" class="btn btn-submit w-100 py-2">Registrarse</button>
                 </div>
             </form>
         </div>
     </div>
-
-    <script>
-        function togglePassword() {
-            const field = document.getElementById("password");
-            field.type = field.type === "password" ? "text" : "password";
-        }
-        document.addEventListener("DOMContentLoaded", function () {
-            const paisSelect = document.querySelector('select[name="pais"]');
-            const provinciaSelect = document.querySelector('select[name="provincia"]');
-            const localidadSelect = document.querySelector('select[name="localidad"]');
-
-            paisSelect.addEventListener("change", function () {
-                const pais = this.value;
-                provinciaSelect.innerHTML = '<option disabled selected>Seleccionando...</option>';
-                localidadSelect.innerHTML = '<option disabled selected>Seleccione una provincia primero</option>';
-
-                fetch(`/api/provincias/?pais=${encodeURIComponent(pais)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        provinciaSelect.innerHTML = '<option disabled selected>Seleccione una provincia</option>';
-                        data.forEach(p => {
-                            provinciaSelect.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-                        });
-                    });
-            });
-
-            provinciaSelect.addEventListener("change", function () {
-                const provincia = this.value;
-                localidadSelect.innerHTML = '<option disabled selected>Seleccionando...</option>';
-
-                fetch(`/api/localidades/?provincia=${encodeURIComponent(provincia)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        localidadSelect.innerHTML = '<option disabled selected>Seleccione una localidad</option>';
-                        data.forEach(l => {
-                            localidadSelect.innerHTML += `<option value="${l.nombre}">${l.nombre}</option>`;
-                        });
-                    });
-            });
-        });
-    </script>
-
 
 </body>
 

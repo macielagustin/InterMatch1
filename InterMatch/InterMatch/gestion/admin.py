@@ -5,6 +5,7 @@ from .models import (
     Importador,
     FechaDisponible,
     HorarioDisponible,
+    ConfiguracionSistema,
 )
 
 admin.site.register(HorarioDisponible)
@@ -16,3 +17,4 @@ admin.site.register(FechaDisponible)
 admin.site.register(Usuario)
 admin.site.register(EmpresaExportadora)
 admin.site.register(Importador)
+admin.site.register(ConfiguracionSistema)

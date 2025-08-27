@@ -69,8 +69,10 @@
     </nav>
 
     <div class="container py-5">
-        <div class="form-section mx-auto shadow p-5 bg-white rounded" style="max-width: 600px;">
-            <h2 class="text-center mb-4 titulo-rosa">Registro de Persona</h2>
+        <div class="form-section mx-auto shadow p-5 rounded" style="max-width: 600px; background:#1A2042;">
+            <h2 class="text-center mb-4" style="color:#EB7DBF; font-family:'Black Black italic', sans-serif;">
+                Registro de Persona
+            </h2>
 
             {% if form.errors %}
             <ul style="color: red;">
@@ -82,28 +84,28 @@
             </ul>
             {% endif %}
 
-
             <form method="post" action="{% url 'registroPersona' %}" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <!-- Nombre -->
                 <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" required
-                        pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}" title="Ingrese un nombre válido (solo letras)">
+                    <label for="nombre" class="form-label text-white">Nombre</label>
+                    <input type="text" class="form-control bg-dark text-white border-0" id="nombre" name="nombre"
+                        required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}" title="Ingrese un nombre válido (solo letras)">
                 </div>
 
                 <!-- Apellido -->
                 <div class="mb-3">
-                    <label for="apellido" class="form-label">Apellido</label>
-                    <input type="text" class="form-control" id="apellido" name="apellido" required
-                        pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}" title="Ingrese un apellido válido (solo letras)">
+                    <label for="apellido" class="form-label text-white">Apellido</label>
+                    <input type="text" class="form-control bg-dark text-white border-0" id="apellido" name="apellido"
+                        required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}"
+                        title="Ingrese un apellido válido (solo letras)">
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
-                        <label for="tipo_doc" class="form-label">Tipo de documento</label>
-                        <select id="tipo_doc" name="tipo_doc" class="form-select" required>
+                    <div class="col-md-6 mb-3">
+                        <label for="tipo_doc" class="form-label text-white">Tipo de documento</label>
+                        <select id="tipo_doc" name="tipo_doc" class="form-select bg-dark text-white border-0" required>
                             <option value="" disabled selected>Seleccionar tipo</option>
                             <option value="DNI">DNI</option>
                             <option value="Pasaporte">Pasaporte</option>
@@ -111,58 +113,92 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6">
-                        <label for="num_doc" class="form-label">Número de documento</label>
-                        <input type="text" id="num_doc" name="num_doc" class="form-control"
+                    <div class="col-md-6 mb-3">
+                        <label for="num_doc" class="form-label text-white">Número de documento</label>
+                        <input type="text" id="num_doc" name="num_doc" class="form-control bg-dark text-white border-0"
                             placeholder="Ingrese el número" required pattern="^[a-zA-Z0-9\s.-]{5,20}$"
                             title="Ingrese un número de documento válido. Puede contener letras, números, guiones o puntos.">
                     </div>
                 </div>
 
-
                 <!-- Email -->
                 <div class="mb-3">
-                    <label for="email" class="form-label">Correo electrónico</label>
-                    <input type="email" class="form-control" id="email" name="email" required
-                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" title="Ingrese un correo válido">
+                    <label for="email" class="form-label text-white">Correo electrónico</label>
+                    <input type="email" class="form-control bg-dark text-white border-0" id="email" name="email"
+                        required>
                 </div>
 
                 <!-- Usuario -->
                 <div class="mb-3">
-                    <label for="usuario" class="form-label">Usuario</label>
-                    <input type="text" class="form-control" id="username" name="username" required minlength="4"
-                        maxlength="20" pattern="^[a-zA-Z0-9._]+$"
-                        title="Solo letras, números, puntos o guiones bajos. Sin espacios.">
+                    <label for="username" class="form-label text-white">Usuario</label>
+                    <input type="text" class="form-control bg-dark text-white border-0" id="username" name="username"
+                        required minlength="4" maxlength="20" pattern="^[a-zA-Z0-9._]+$">
                 </div>
 
                 <!-- Contraseña -->
                 <div class="mb-3">
-                    <label for="password" class="form-label">Contraseña</label>
-                    <div class="position-relative password-container">
-                        <input type="password" class="form-control" id="password" name="password" required minlength="8"
-                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                            title="Debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula y un número.">
-                        <button type="button" class="toggle-password" onclick="togglePassword()" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
-                        background: none; border: none; cursor: pointer;">
-                            👁️
+                    <label for="password" class="form-label text-white">Contraseña</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control bg-dark text-white border-0" id="password"
+                            name="password" required minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+                        <button type="button" class="btn btn-outline-light" onclick="togglePassword('password', this)">
+                            <i class="bi bi-eye"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary px-5">Continuar</button>
+                <!-- Repetir contraseña -->
+                <div class="mb-3">
+                    <label for="password2" class="form-label text-white">Repetir contraseña</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control bg-dark text-white border-0" id="password2"
+                            name="password2" required>
+                        <button type="button" class="btn btn-outline-light" onclick="togglePassword('password2', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <div id="passwordHelp" class="form-text text-danger d-none">
+                        ⚠️ Las contraseñas no coinciden.
+                    </div>
                 </div>
 
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn w-100" style="background:#EB7DBF; color:white;">Continuar</button>
+                </div>
             </form>
         </div>
     </div>
 
-
     <script>
-        function togglePassword() {
-            const field = document.getElementById("password");
-            field.type = field.type === "password" ? "text" : "password";
+        function togglePassword(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            const icon = btn.querySelector("i");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("bi-eye", "bi-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.replace("bi-eye-slash", "bi-eye");
+            }
         }
+
+        // Validación en tiempo real
+        const password = document.getElementById("password");
+        const password2 = document.getElementById("password2");
+        const help = document.getElementById("passwordHelp");
+
+        function checkPasswords() {
+            if (password.value && password2.value && password.value !== password2.value) {
+                help.classList.remove("d-none");
+                password2.setCustomValidity("Las contraseñas no coinciden");
+            } else {
+                help.classList.add("d-none");
+                password2.setCustomValidity("");
+            }
+        }
+
+        password.addEventListener("input", checkPasswords);
+        password2.addEventListener("input", checkPasswords);
     </script>
 
 

@@ -1,0 +1,39 @@
+{% extends 'gestion/base_admin.html' %}
+
+{% block title %}Difusion{% endblock %}
+
+{% block content %}
+
+
+<div class="container">
+    <h2 class="titulo text-center mb-4">Enviar correo de difusión</h2>
+
+    {% if mensaje_enviado %}
+        <div class="alert alert-success">¡Correo enviado exitosamente!</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Asunto:</label>
+            <input type="text" name="asunto" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Mensaje:</label>
+            <textarea name="mensaje" class="form-control" rows="6" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Enviar a:</label>
+            <select name="destinatario" class="form-select" required>
+                <option value="Todos">Todos</option>
+                <option value="Empresas">Solo Empresas Exportadoras</option>
+                <option value="Importadores">Solo Importadores</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-boca">Enviar</button>
+    </form>
+</div>
+{% endblock %}

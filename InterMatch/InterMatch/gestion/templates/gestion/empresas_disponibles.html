@@ -1,108 +1,159 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Empresas Exportadoras - InterMatch</title>
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
-    <style>
-        body {
-            background-color: #222A59;
-            color: white;
-            font-family: 'Thin Thin italic', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <title>Empresas Exportadoras - InterMatch</title>
+  <style>
+    :root{
+      --bg:#222A59; --panel:#1A2042; --accent:#EB7DBF; --ink:#fff; --muted:#cfd3ff; --field:#0f1330;
+    }
+    body{ background-color:var(--bg); color:var(--ink); font-family:'Thin Thin italic',sans-serif; margin:0; }
+    header{ background-color:var(--panel); padding:20px; text-align:center; }
+    header h1{ font-family:'Black Black italic',sans-serif; color:var(--accent); margin:0; }
 
-        header {
-            background-color: #EB7DBF;
-            padding: 20px;
-            text-align: center;
-        }
+    .panel-container{ display:flex; min-height:100vh; }
+    .sidebar{
+      width:250px; background-color:var(--panel); padding:20px; display:flex; flex-direction:column; gap:12px;
+    }
+    .sidebar a{
+      color:#fff; text-decoration:none; font-size:1.05rem; padding:10px 12px; border-radius:10px; transition:.25s;
+    }
+    .sidebar a:hover{ background:var(--accent); color:var(--bg); font-weight:700; }
 
-        h1, h2 {
-            font-family: 'Black Black italic', sans-serif;
-            color: #EB7DBF;
-        }
+    .content{ flex-grow:1; padding:32px 40px; }
 
-        .panel-container {
-            display: flex;
-            min-height: 100vh;
-        }
+    /* Filtros */
+    .filters{
+      background:var(--panel); border:1px solid rgba(255,255,255,.08);
+      border-radius:16px; padding:16px; margin-bottom:20px;
+    }
+    .filters form{ display:grid; grid-template-columns: 1fr 200px 200px 200px 140px; gap:10px; }
+    .filters input, .filters select{
+      background:var(--field); color:#fff; border:0; border-radius:10px; padding:10px 12px;
+    }
+    .filters button{
+      background:var(--accent); color:#fff; border:0; border-radius:10px; padding:10px 12px; font-weight:700; cursor:pointer;
+    }
+    .filters button:hover{ filter:brightness(1.08); }
+    @media (max-width: 1024px){
+      .filters form{ grid-template-columns: 1fr 1fr; }
+    }
 
-        .sidebar {
-            width: 250px;
-            background-color: #1A2042;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+    /* Cards */
+    .empresa-card{
+      background-color:var(--panel); border-radius:16px; padding:18px; margin-bottom:18px;
+      border:1px solid rgba(255,255,255,.08); display:flex; gap:16px; align-items:flex-start;
+    }
+    .empresa-logo{
+      width:84px; height:84px; border-radius:12px; object-fit:cover; background:#0b0f2b;
+      border:2px solid rgba(235,125,191,.45);
+    }
+    .empresa-head{ display:flex; align-items:center; gap:12px; }
+    .empresa-title{
+      margin:0; font-family:'Black Black italic',sans-serif; color:var(--accent); font-size:1.2rem;
+    }
+    .empresa-meta{ color:var(--muted); font-size:.95rem; margin-top:2px; }
+    .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+    .chip{
+      background:rgba(235,125,191,.18); border:1px solid rgba(235,125,191,.35); color:#fff;
+      padding:4px 8px; border-radius:10px; font-size:.85rem;
+    }
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .btn{
+      display:inline-block; text-decoration:none; padding:9px 14px; border-radius:10px; font-weight:700;
+    }
+    .btn-primary{ background:var(--accent); color:#fff; }
+    .btn-primary:hover{ filter:brightness(1.08); }
+    .btn-ghost{ border:1px solid rgba(255,255,255,.18); color:#fff; }
+    .btn-ghost:hover{ background:rgba(255,255,255,.06); }
 
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            font-size: 1.1em;
-            padding: 10px;
-            border-radius: 8px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a:hover {
-            background-color: #EB7DBF;
-            color: #222A59;
-            font-weight: bold;
-        }
-
-        .content {
-            flex-grow: 1;
-            padding: 40px;
-        }
-
-        .empresa-card {
-            background-color: #1A2042;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .empresa-card h3 {
-            margin-top: 0;
-            color: #EB7DBF;
-        }
-    </style>
+    .empty{ opacity:.85; }
+  </style>
 </head>
-
 <body>
-    <header>
-        <h1>Empresas Exportadoras Disponibles</h1>
-    </header>
 
-    <div class="panel-container">
-        <div class="sidebar">
-            <a href="{% url 'panel_importador' %}">Volver al panel</a>
-            <a href="{% url 'perfil_importador' %}">Ver perfil</a>
-            <a href="{% url 'editar_importador' %}">Editar datos</a>
-            <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
-        </div>
+<header>
+  <h1>Empresas Exportadoras Disponibles</h1>
+</header>
 
-        <div class="content">
-            {% for empresa in empresas %}
-            <div class="empresa-card">
-                <h3>{{ empresa.razon_social }}</h3>
-                <p><strong>Rubro:</strong> {{ empresa.rubro.all|join:", " }}</p>
-                <p><strong>Provincia:</strong> {{ empresa.provincia.nombre }}</p>
-                <p><strong>Localidad:</strong> {{ empresa.localidad.nombre }}</p>
-                <p><strong>Certificaciones:</strong> {{ empresa.certificaciones.all|join:", " }}</p>
-                <p><strong>Capacidad productiva mensual:</strong> {{ empresa.capacidad_productiva_mensual }}</p>
-                <p><strong>Exporta actualmente:</strong> {{ empresa.exporta_actualmente|yesno:"Sí,No" }}</p>
-                <a href="{% url 'detalle_empresa' empresa.empresa_id %}" class="boton-accion">Ver más</a>
+<div class="panel-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <a href="{% url 'panel_importador' %}">Volver al panel</a>
+    <a href="{% url 'perfil_importador' %}">Ver perfil</a>
+    <a href="{% url 'editar_importador' %}">Editar datos</a>
+    <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Listado -->
+    {% for empresa in empresas %}
+      <article class="empresa-card">
+        <!-- Logo -->
+        {% if empresa.logo %}
+          <img class="empresa-logo" src="{{ empresa.logo.url }}" alt="Logo {{ empresa.razon_social }}">
+        {% else %}
+          <img class="empresa-logo" src="{% static 'img/logo_placeholder.png' %}" alt="Logo">
+        {% endif %}
+
+        <div style="flex:1;">
+          <div class="empresa-head">
+            <h3 class="empresa-title">{{ empresa.razon_social }}</h3>
+          </div>
+
+          <div class="empresa-meta">
+            {{ empresa.rubro.nombre|default:"Rubro no especificado" }} ·
+            {{ empresa.provincia.nombre|default:"Provincia" }} – {{ empresa.localidad.nombre|default:"Localidad" }} ·
+            {% if empresa.exporta_actualmente %} Exporta actualmente {% else %} No exporta {% endif %}
+          </div>
+
+          {% if empresa.capacidad_productiva %}
+            <div class="empresa-meta" style="margin-top:4px;">
+              Capacidad mensual: {{ empresa.capacidad_productiva }}
             </div>
+          {% endif %}
+
+          <!-- Certificaciones -->
+          <div class="chips">
+            {% for c in empresa.certificaciones.all %}
+              <span class="chip">{{ c.nombre }}</span>
             {% empty %}
-            <p>No se encontraron empresas registradas.</p>
+              <span class="chip" style="opacity:.6">Sin certificaciones</span>
             {% endfor %}
+          </div>
+
+          <!-- Acciones -->
+          <div class="actions">
+            <a href="{% url 'detalle_empresa' empresa.empresa_id %}" class="btn btn-ghost">Ver más</a>
+            {# Descomentar si tenés la view de solicitud de reunión #}
+            {# <a href="{% url 'solicitar_reunion' empresa_id=empresa.empresa_id %}" class="btn btn-primary">Solicitar reunión</a> #}
+          </div>
         </div>
-    </div>
+      </article>
+    {% empty %}
+      <p class="empty">No se encontraron empresas registradas con los filtros actuales.</p>
+    {% endfor %}
+
+    {# Si usás paginación en el view, podés mostrarla así: #}
+    {% if empresas.has_other_pages %}
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+        {% if empresas.has_previous %}
+          <a class="btn btn-ghost" href="?page={{ empresas.previous_page_number }}&q={{ request.GET.q }}&rubro={{ request.GET.rubro }}&provincia={{ request.GET.provincia }}&exporta={{ request.GET.expor }}"
+             aria-label="Anterior">« Anterior</a>
+        {% endif %}
+        <span style="align-self:center; opacity:.9;">Página {{ empresas.number }} de {{ empresas.paginator.num_pages }}</span>
+        {% if empresas.has_next %}
+          <a class="btn btn-ghost" href="?page={{ empresas.next_page_number }}&q={{ request.GET.q }}&rubro={{ request.GET.rubro }}&provincia={{ request.GET.provincia }}&exporta={{ request.GET.expor }}"
+             aria-label="Siguiente">Siguiente »</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
 </body>
 </html>

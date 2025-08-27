@@ -1,110 +1,155 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Importadores Registrados - InterMatch</title>
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
-    <style>
-        body {
-            background-color: #222A59;
-            color: white;
-            font-family: 'Thin Thin italic', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <title>Importadores Registrados - InterMatch</title>
+  <style>
+    :root{
+      --bg:#222A59; --panel:#1A2042; --accent:#EB7DBF;
+      --ink:#fff; --muted:#cfd3ff; --field:#0f1330;
+    }
+    body{ background:var(--bg); color:var(--ink); font-family:'Thin Thin italic',sans-serif; margin:0; }
+    header{ background:var(--panel); padding:20px; text-align:center; }
+    header h1{ font-family:'Black Black italic',sans-serif; color:var(--accent); margin:0; }
 
-        header {
-            background-color: #EB7DBF;
-            padding: 20px;
-            text-align: center;
-        }
+    .panel-container{ display:flex; min-height:100vh; }
+    .sidebar{
+      width:250px; background:var(--panel); padding:20px; display:flex; flex-direction:column; gap:12px;
+    }
+    .sidebar a{
+      color:#fff; text-decoration:none; font-size:1.05rem; padding:10px 12px;
+      border-radius:10px; transition:.25s; display:block;
+    }
+    .sidebar a:hover{ background:var(--accent); color:var(--bg); font-weight:700; }
 
-        h1, h2 {
-            font-family: 'Black Black italic', sans-serif;
-            color: #EB7DBF;
-        }
+    .content{ flex-grow:1; padding:32px 40px; }
 
-        .panel-container {
-            display: flex;
-            min-height: 100vh;
-        }
+    /* Card */
+    .card{
+      background:var(--panel); border-radius:16px; padding:18px; margin-bottom:18px;
+      border:1px solid rgba(255,255,255,.08); display:flex; gap:16px; align-items:flex-start;
+    }
+    .avatar{
+      width:84px; height:84px; border-radius:12px; object-fit:cover; background:#0b0f2b;
+      border:2px solid rgba(235,125,191,.45);
+    }
+    .title{ margin:0; font-family:'Black Black italic',sans-serif; color:var(--accent); font-size:1.2rem; }
+    .meta{ color:var(--muted); font-size:.95rem; margin-top:2px; }
 
-        .sidebar {
-            width: 250px;
-            background-color: #1A2042;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+    .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+    .chip{
+      background:rgba(235,125,191,.18); border:1px solid rgba(235,125,191,.35);
+      color:#fff; padding:4px 8px; border-radius:10px; font-size:.85rem;
+    }
 
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            font-size: 1.1em;
-            padding: 10px;
-            border-radius: 8px;
-            transition: background 0.3s;
-        }
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .btn{ display:inline-block; text-decoration:none; padding:9px 14px; border-radius:10px; font-weight:700; }
+    .btn-ghost{ border:1px solid rgba(255,255,255,.18); color:#fff; }
+    .btn-ghost:hover{ background:rgba(255,255,255,.06); }
+    .btn-primary{ background:var(--accent); color:#fff; }
+    .btn-primary:hover{ filter:brightness(1.08); }
 
-        .sidebar a:hover {
-            background-color: #EB7DBF;
-            color: #222A59;
-            font-weight: bold;
-        }
-
-        .content {
-            flex-grow: 1;
-            padding: 40px;
-        }
-
-        .card {
-            background-color: #1A2042;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-    </style>
+    .empty{ opacity:.85; }
+  </style>
 </head>
-
 <body>
-    <header>
-        <h1>Importadores Registrados</h1>
-    </header>
 
-    <div class="panel-container">
-        <div class="sidebar">
-            <a href="{% url 'ver_perfil_empresa' %}">Ver perfil</a>
-            <a href="{% url 'editar_empresa' %}">Editar datos</a>
-            <a href="{% url 'importadores_disponibles' %}">Ver Importadores</a>
-            <a href="#">Reuniones</a>
-            <a href="#">Exportar</a>
-            <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
-        </div>
+<header>
+  <h1>Importadores Registrados</h1>
+</header>
 
-        <div class="content">
-            <h2>Importadores disponibles:</h2>
+<div class="panel-container">
+  <!-- Sidebar (igual que panel empresa) -->
+  <nav class="sidebar">
+    <a href="{% url 'ver_perfil_empresa' %}">Perfil Empresa</a>
+    <a href="{% url 'editar_empresa' %}">Editar Empresa</a>
+    <a href="{% url 'importadores_disponibles' %}">Importadores Disponibles</a>
+    <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
+  </nav>
 
-            {% for importador in importadores %}
-                <div class="card">
-                    <p><strong>Razón social:</strong> {{ importador.razon_social }}</p>
-                    <p><strong>Teléfono:</strong> {{ importador.telefono }}</p>
-                    <p><strong>País:</strong> {{ importador.pais.nombre }}</p>
-                    <p><strong>Provincia:</strong> {{ importador.provincia.nombre }}</p>
-                    <p><strong>Localidad:</strong> {{ importador.localidad.nombre }}</p>
-                    <p><strong>Sitio web:</strong> <a href="{{ importador.sitio_web }}" target="_blank">{{ importador.sitio_web }}</a></p>
-                    <p><strong>Rubros de interés:</strong> {{ importador.rubros_interes.all|join:", " }}</p>
-                    <p><strong>Idiomas:</strong> {{ importador.idiomas_negociacion.all|join:", " }}</p>
-                    <a href="{% url 'detalle_importador' importador.id %}" class="boton-accion">Ver más</a>
-                </div>
+  <!-- Contenido -->
+  <div class="content">
+    <h2 style="font-family:'Black Black italic',sans-serif; color:var(--accent); margin:0 0 12px 0;">
+      Importadores disponibles
+    </h2>
+
+    {% for importador in importadores %}
+      <article class="card">
+        {% if importador.logo %}
+          <img class="avatar" src="{{ importador.logo.url }}" alt="Logo {{ importador.razon_social }}">
+        {% else %}
+          <img class="avatar" src="{% static 'img/logo_placeholder.png' %}" alt="Logo">
+        {% endif %}
+
+        <div style="flex:1;">
+          <h3 class="title">{{ importador.razon_social|default:"Importador sin razón social" }}</h3>
+
+          <div class="meta">
+            {{ importador.tipo_importador|default:"Tipo no especificado" }} ·
+            {{ importador.pais_origen.nombre|default:"País" }}
+            {% if importador.provincia %} – {{ importador.provincia.nombre|default:importador.provincia }}{% endif %}
+            {% if importador.localidad %} · {{ importador.localidad.nombre|default:importador.localidad }}{% endif %}
+          </div>
+
+          {% if importador.sitio_web %}
+            <div class="meta" style="margin-top:4px;">
+              <a href="{{ importador.sitio_web }}" target="_blank" rel="noopener"
+                 style="color:var(--muted); text-decoration:underline;">
+                {{ importador.sitio_web }}
+              </a>
+            </div>
+          {% endif %}
+
+          <!-- Rubros de interés -->
+          <div class="chips">
+            {% for r in importador.rubros.all %}
+              <span class="chip">{{ r.nombre|default:r }}</span>
             {% empty %}
-                <p>No hay importadores registrados.</p>
+              <span class="chip" style="opacity:.6">Sin rubros de interés</span>
             {% endfor %}
+          </div>
 
+          <!-- Idiomas -->
+          <div class="chips">
+            {% for i in importador.idiomas.all %}
+              <span class="chip">{{ i.nombre|default:i }}</span>
+            {% empty %}
+              <span class="chip" style="opacity:.6">Sin idiomas cargados</span>
+            {% endfor %}
+          </div>
+
+          <!-- Tipos de proveedor buscado -->
+          <div class="chips">
+            {% for t in importador.tipos_proveedor.all %}
+              <span class="chip">{{ t.nombre|default:t }}</span>
+            {% empty %}
+              <span class="chip" style="opacity:.6">Sin tipo de proveedor</span>
+            {% endfor %}
+          </div>
+
+          <!-- Países donde comercializa -->
+          <div class="chips">
+            {% for p in importador.paises_comercializa.all %}
+              <span class="chip">{{ p.nombre|default:p }}</span>
+            {% empty %}
+              <span class="chip" style="opacity:.6">Sin países de comercialización</span>
+            {% endfor %}
+          </div>
+
+          <!-- Acciones -->
+          <div class="actions">
+            <a href="{% url 'detalle_importador' importador.id %}" class="btn btn-ghost">Ver más</a>
+            {# Si habilitás agendar desde empresa: #}
+            {# <a href="{% url 'crear_reunion' importador_id=importador.id %}" class="btn btn-primary">Solicitar reunión</a> #}
+          </div>
         </div>
-    </div>
-</body>
+      </article>
+    {% empty %}
+      <p class="empty">No hay importadores registrados.</p>
+    {% endfor %}
+  </div>
+</div>
 
+</body>
 </html>

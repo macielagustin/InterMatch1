@@ -65,9 +65,12 @@ urlpatterns = [
     path('panel_admin/gestionar-horarios/', views.gestionar_horarios, name='gestionar_horarios'),
     path('panel_admin/editar-horario/<int:horario_id>/', views.editar_horario, name='editar_horario'),
     path('panel_admin/eliminar-horario/<int:horario_id>/', views.eliminar_horario, name='eliminar_horario'),
+    path('panel_admin/difusion/', views.difusion_admin_view, name='difusion_admin'),
+    path('panel_admin/configuracion/', views.configuracion_sistema_view, name='configuracion_sistema'),
 
     #Reunion
     path('reunion/crear/<str:tipo_receptor>/<int:receptor_id>/', crear_reunion, name='crear_reunion'),
     path('reunion/confirmada/', views.reunion_exitosa, name='reunion_exitosa'),
 
+    path('correo-prueba/', views.enviar_correo_prueba, name='correo_prueba'),
 ]

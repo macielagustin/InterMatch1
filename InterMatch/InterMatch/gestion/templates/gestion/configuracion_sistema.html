@@ -1,0 +1,35 @@
+{% extends 'gestion/base_admin.html' %}
+
+{% block title %}Configuracion del Sistema{% endblock %}
+
+{% block content %}
+
+
+<div class="container">
+    <h2 class="titulo text-center mb-4">Configuración del Sistema</h2>
+
+    {% if mensaje %}
+        <div class="alert alert-success">{{ mensaje }}</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="permitir_registro" id="registro" {% if config.permitir_registro %}checked{% endif %}>
+            <label class="form-check-label" for="registro">
+                Permitir registro de nuevos usuarios
+            </label>
+        </div>
+
+        <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" name="permitir_login" id="login" {% if config.permitir_login %}checked{% endif %}>
+            <label class="form-check-label" for="login">
+                Permitir inicio de sesión
+            </label>
+        </div>
+
+        <button type="submit" class="btn-boca mt-4">Guardar cambios</button>
+    </form>
+</div>
+
+{% endblock %}
