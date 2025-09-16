@@ -1,0 +1,7 @@
+Se confirmó una reunión:
+
+Empresa: {{ empresa }}
+Importador: {{ importador }}
+Fecha: {{ fecha }}
+Hora: {{ hora }}
+Mensaje: {{ mensaje }}

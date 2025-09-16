@@ -215,7 +215,7 @@
                         <h2>{{ empresa.razon_social }}</h2>
                         <div class="meta">
                             {{ empresa.rubro.nombre|default:"Rubro no especificado" }} ·
-                            {{ empresa.provincia.nombre|default:"Provincia" }} – 
+                            {{ empresa.provincia.nombre|default:"Provincia" }} –
                             {{ empresa.localidad.nombre|default:"Localidad" }}
                         </div>
                         {% if empresa.sitio_web %}
@@ -289,11 +289,12 @@
             {% if empresa.brochure %}
             <section class="card">
                 <div class="label" style="margin-bottom:8px;">Brochure</div>
-                <a class="btn btn-primary" href="{{ empresa.brochure.url }}" target="_blank" rel="noopener">
+                <a class="btn btn-primary" href="{% url 'descargar_brochure' empresa.pk %}">
                     Descargar brochure (PDF)
                 </a>
             </section>
             {% endif %}
+
 
             <!-- Comentarios -->
             <section class="card">

@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,12 +14,31 @@
     <!-- Estilos personalizados -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
 </head>
+
+<style>
+            /* 🔹 Logo centrado */
+        .logo-container {
+            text-align: center;
+            margin: 10px 0;
+            /* menos espacio entre nav y header */
+        }
+
+        .logo-container img {
+            width: auto;
+            /* crece en desktop, se ajusta en móvil */
+            height: 50px;
+            image-rendering: -webkit-optimize-contrast;
+        }
+</style>
+
 <body>
 
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg">
         <div class="container px-5">
-            <a class="navbar-brand" href="{% url 'inicio' %}">InterMatch</a>
+            <div class="logo-container">
+                <img src="{% static 'img/header-bg.png' %}" alt="Logo Catamarca Gobierno">
+            </div>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Inicio</a></li>
@@ -34,27 +54,39 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-6 col-lg-5">
-                    <div class="p-4 rounded shadow" style="background-color: rgba(255, 255, 255, 0.05); border: 1px solid #eb7dbf;">
+                    <div class="p-4 rounded shadow"
+                        style="background-color: rgba(255, 255, 255, 0.05); border: 1px solid #eb7dbf;">
                         <h3 class="text-center mb-4 text-white">Iniciar Sesión</h3>
                         <form method="POST" action="{% url 'login' %}">
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="Usuario" class="form-label text-white">Usuario</label>
-                                <input type="text" name="username" placeholder="Usuario" class="form-control" required />
+                                <input type="text" name="username" placeholder="Usuario" class="form-control"
+                                    required />
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label text-white">Contraseña</label>
-                                <input type="password" name="password" placeholder="Contraseña" class="form-control" id="passwordLogin" required />
+                                <input type="password" name="password" placeholder="Contraseña" class="form-control"
+                                    id="passwordLogin" required />
                             </div>
+
+                            <!-- 🔑 Enlace de recuperación -->
+                            <div class="mb-3 text-end">
+                                <a href="{% url 'password_reset_request' %}" class="text-decoration-none"
+                                    style="color: #EB7DBF;">¿Olvidaste tu contraseña?</a>
+                            </div>
+
                             <div class="d-grid mb-3">
                                 <button type="submit" class="btn btn-primary">Ingresar</button>
                             </div>
 
                             {% if error %}
-                             <P style="color: red;">{{ error }}</P>
+                            <p style="color: red;">{{ error }}</p>
                             {% endif %}
+
                             <p class="text-center text-white">
-                                ¿No tenés cuenta? <a href="{% url 'registroPersona' %}" class="text-decoration-none" style="color: #EB7DBF;">Registrate</a>
+                                ¿No tenés cuenta? <a href="{% url 'registroPersona' %}" class="text-decoration-none"
+                                    style="color: #EB7DBF;">Registrate</a>
                             </p>
                         </form>
                     </div>
@@ -64,4 +96,5 @@
     </section>
 
 </body>
+
 </html>

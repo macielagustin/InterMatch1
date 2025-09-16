@@ -259,8 +259,8 @@
                     <label for="idiomas">Idiomas para negociar</label>
                     <select name="idiomas" id="idiomas" multiple>
                         {% for idioma in idiomas %}
-                        <option value="{{ idiomas.id }}" {% if idiomas in importador.idiomas.all %}selected{% endif %}>
-                            {{ idiomas.nombre }}
+                        <option value="{{ idioma.pk }}" {% if idioma in importador.idiomas.all %}selected{% endif %}>
+                            {{ idioma.nombre }}
                         </option>
                         {% endfor %}
                     </select>
@@ -272,7 +272,7 @@
                     {% else %}
                     <select name="rubros" id="rubros" multiple>
                         {% for r in rubros %}
-                        <option value="{{ r.id }}" {% if r in importador.rubros.all %}selected{% endif %}>
+                        <option value="{{ r.pk }}" {% if r in importador.rubros.all %}selected{% endif %}>
                             {{ r.nombre }}
                         </option>
                         {% endfor %}
@@ -282,17 +282,18 @@
                     <label for="tipos_proveedor">Tipo de proveedor de interés</label>
                     <select name="tipos_proveedor" id="tipos_proveedor" multiple>
                         {% for t in tipos_proveedor %}
-                        <option value="{{ t.id }}" {% if t in importador.tipos_proveedor.all %}selected{% endif %}>
+                        <option value="{{ t.pk }}" {% if t in importador.tipos_proveedor.all %}selected{% endif %}>
                             {{ t.nombre }}
                         </option>
                         {% endfor %}
                     </select>
 
 
+
                     <label for="paises_comercializa">Países donde comercializa actualmente</label>
                     <select name="paises_comercializa" id="paises_comercializa" multiple>
                         {% for p in paises %}
-                        <option value="{{ p.id }}" {% if p in importador.paises_comercializa.all %}selected{% endif %}>
+                        <option value="{{ p.pk }}" {% if p in importador.paises_comercializa.all %}selected{% endif %}>
                             {{ p.nombre }}
                         </option>
                         {% endfor %}

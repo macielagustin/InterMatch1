@@ -29,6 +29,9 @@ SECRET_KEY = 'django-insecure-3_(^w40yrp#@p6#yk4ea*e+##acle9vgj&@f8s7%57zas3o1_9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 ALLOWED_HOSTS = []
 
 
@@ -154,3 +157,5 @@ EMAIL_HOST_USER = 'andriuolo27@gmail.com'
 EMAIL_HOST_PASSWORD = 'ersn yqzl ztrh osze'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+
+MAX_FECHAS_HABILITADAS = 4

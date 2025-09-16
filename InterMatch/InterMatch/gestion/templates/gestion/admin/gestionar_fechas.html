@@ -1,46 +1,70 @@
-<!-- gestion/admin/gestionar_fechas.html -->
 {% extends 'gestion/base_admin.html' %}
 
 {% block title %}Gestionar Fechas Disponibles{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Gestionar Fechas Disponibles</h2>
+  <h2>Gestionar Fechas Disponibles</h2>
 
-    <form method="post" class="mb-4">
-        {% csrf_token %}
-        <div class="row g-3 align-items-center">
-            <div class="col-auto">
-                {{ form.fecha }}
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-success">Agregar Fecha</button>
-            </div>
-        </div>
-    </form>
+  <!-- Alta rápida de fecha -->
+  <form method="post" class="mb-4">
+    {% csrf_token %}
+    <div class="row g-3 align-items-center">
+      <div class="col-auto">
+        {{ form.fecha }}
+      </div>
+      <div class="col-auto form-check">
+        <!-- checkbox habilitada (si tu Form tiene el campo) -->
+        <label class="form-check-label" for="{{ form.habilitada.id_for_label }}">Habilitada</label>
+        {{ form.habilitada }}
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-success">Agregar Fecha</button>
+      </div>
+    </div>
+    {% if form.errors %}
+      <div class="alert alert-danger mt-3">
+        Revisá los errores: {{ form.errors }}
+      </div>
+    {% endif %}
+  </form>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for f in fechas %}
-            <tr>
-                <td>{{ f.fecha }}</td>
-                <td>
-                    <a href="{% url 'editar_fecha' f.id %}" class="btn btn-primary btn-sm">Editar</a>
-                    <a href="{% url 'eliminar_fecha' f.id %}" class="btn btn-danger btn-sm">Eliminar</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="2">No hay fechas disponibles.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <table class="table table-bordered align-middle">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th style="width:260px">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in fechas %}
+      <tr>
+        <td>{{ f.fecha }}</td>
+        <td>
+          {% if f.habilitada %}
+            <span class="badge text-bg-success">Habilitada</span>
+          {% else %}
+            <span class="badge text-bg-secondary">Deshabilitada</span>
+          {% endif %}
+        </td>
+        <td>
+          <!-- Toggle habilitar/deshabilitar -->
+          <a href="{% url 'toggle_habilitada' f.id %}"
+             class="btn btn-sm {% if f.habilitada %}btn-warning{% else %}btn-success{% endif %}">
+            {% if f.habilitada %}Deshabilitar{% else %}Habilitar{% endif %}
+          </a>
+
+          <a href="{% url 'editar_fecha' f.id %}" class="btn btn-primary btn-sm">Editar</a>
+          <a href="{% url 'eliminar_fecha' f.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3">No hay fechas disponibles.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}

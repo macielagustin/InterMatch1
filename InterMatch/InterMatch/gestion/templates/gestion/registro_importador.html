@@ -1,259 +1,260 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Registro Importador - InterMatch</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro Importador - InterMatch</title>
 
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
 
-    <style>
-        body {
-            background-color: #222A59;
-            color: white;
-            font-family: 'Thin Thin italic', sans-serif;
-        }
-
-        h2 {
-            font-family: 'Black Black italic', sans-serif;
-            color: #EB7DBF;
-        }
-
-        .form-section {
-            background-color: #1A2042;
-            border: 1px solid #EB7DBF;
-            border-radius: 1rem;
-            padding: 2rem;
-            margin: 2rem auto;
-            max-width: 900px;
-        }
-
-        label.form-label {
-            color: white;
-            font-weight: bold;
-            font-style: italic;
-        }
-
-        .form-control,
-        .form-select {
-            background-color: #0f1330;
-            color: white;
-            border: none;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #EB7DBF;
-            box-shadow: 0 0 6px #EB7DBF;
-            background-color: #0f1330;
-            color: white;
-        }
-
-        .btn-submit {
-            background-color: #EB7DBF;
-            border: none;
-            font-weight: bold;
-        }
-
-        .btn-submit:hover {
-            background-color: #d96aa8;
-        }
-    </style>
+  <style>
+    body { background-color:#222A59; color:white; font-family:'Thin Thin italic', sans-serif; }
+    h2 { font-family:'Black Black italic', sans-serif; color:#EB7DBF; }
+    .form-section { background-color:#1A2042; border:1px solid #EB7DBF; border-radius:1rem; padding:2rem; margin:2rem auto; max-width:900px; }
+    label.form-label { color:white; font-weight:bold; font-style:italic; }
+    .form-control, .form-select { background-color:#ffffff; color:#000; border:none; }
+    .form-control:focus, .form-select:focus { border-color:#EB7DBF; box-shadow:0 0 6px #EB7DBF; background-color:#0f1330; color:white; }
+    .btn-submit { background-color:#EB7DBF; border:none; font-weight:bold; }
+    .btn-submit:hover { background-color:#d96aa8; }
+    .error-text { color:#ffb4c9; font-size:.9rem; margin-top:.25rem; }
+  </style>
 </head>
 
 <body>
-
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg" style="background-color:#1A2042;">
-        <div class="container px-5">
-            <a class="navbar-brand text-white" href="{% url 'inicio' %}">InterMatch</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'inicio' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'login' %}">Login</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- FORMULARIO -->
-    <div class="container">
-        <div class="form-section shadow-lg">
-            <h2 class="text-center mb-4">Registro Importador</h2>
-            <form method="post" action="{% url 'registro_importador' usuario_id %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="row g-3">
-
-                    <!-- Razón Social -->
-                    <div class="col-md-6">
-                        <label class="form-label">Razón Social</label>
-                        <input type="text" class="form-control" name="razon_social" required>
-                    </div>
-
-                    <!-- Cargo -->
-                    <div class="col-md-6">
-                        <label class="form-label">Cargo</label>
-                        <select class="form-select" name="cargo" required>
-                            <option value="" disabled selected>Seleccione un cargo</option>
-                            <option>Dueño / Fundador</option>
-                            <option>Gerente General</option>
-                            <option>Director de Compras</option>
-                            <option>Responsable de Importaciones</option>
-                            <option>Jefe de Logística</option>
-                            <option>Asistente Comercial</option>
-                            <option>Encargado de Proveedores</option>
-                            <option>Otro</option>
-                        </select>
-                    </div>
-
-                    <!-- Teléfono -->
-                    <div class="col-md-6">
-                        <label class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" name="telefono" required>
-                    </div>
-
-                    <!-- País -->
-                    <div class="col-md-6">
-                        <label class="form-label">País</label>
-                        <select name="pais_origen" class="form-select" required>
-                            <option value="" disabled selected>Seleccione un país</option>
-                            {% for pais in paises %}
-                            <option value="{{ pais.id }}">{{ pais.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Provincia -->
-                    <div class="col-md-6">
-                        <label class="form-label">Provincia / Estado</label>
-                        <select name="provincia" class="form-select" required>
-                            <option value="" disabled selected>Seleccione una provincia</option>
-                            {% for provincia in provincias %}
-                            <option value="{{ provincia.id }}">{{ provincia.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Localidad -->
-                    <div class="col-md-6">
-                        <label class="form-label">Localidad</label>
-                        <select name="localidad" class="form-select" required>
-                            <option value="" disabled selected>Seleccione una localidad</option>
-                            {% for localidad in localidades %}
-                            <option value="{{ localidad.id }}">{{ localidad.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Empleados -->
-                    <div class="col-md-6">
-                        <label class="form-label">Cantidad de empleados</label>
-                        <input type="number" class="form-control" name="empleados" required>
-                    </div>
-
-                    <!-- Idiomas -->
-                    <div class="col-md-6">
-                        <label class="form-label">Idiomas para negociar</label>
-                        <select class="form-select" name="idiomas" multiple required>
-                            {% for idioma in idiomas %}
-                            <option value="{{ idioma.id }}">{{ idioma.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Sitio Web -->
-                    <div class="col-md-6">
-                        <label class="form-label">Sitio web (opcional)</label>
-                        <input type="url" class="form-control" name="sitio_web" placeholder="https://...">
-                    </div>
-
-                    <!-- Logo -->
-                    <div class="col-md-6">
-                        <label class="form-label">Logo de la empresa</label>
-                        <input type="file" class="form-control" name="logo" accept="image/*">
-                    </div>
-
-                    <!-- Tipo de Importador -->
-                    <div class="col-md-6">
-                        <label class="form-label">Tipo de Importador</label>
-                        <select class="form-select" name="tipo_importador" required>
-                            <option value="" disabled selected>Selecciona un Tipo</option>
-                            <option>Distribuidor Mayorista</option>
-                            <option>Distribuidor Minorista</option>
-                            <option>Retailer / Cadena comercial</option>
-                            <option>E-commerce</option>
-                            <option>Broker / Agente comercial</option>
-                            <option>Otro</option>
-                        </select>
-                    </div>
-
-                    <!-- Rubros de interés -->
-                    <div class="col-md-6">
-                        <label class="form-label">Rubros de interés</label>
-                        {{ form.rubros }}
-                    </div>
-
-                    <!-- Países donde comercializa -->
-                    <div class="col-md-6">
-                        <label class="form-label">Países donde comercializa actualmente</label>
-                        <select class="form-select" name="paises_comercializa" multiple required>
-                            {% for pais in paises %}
-                            <option value="{{ pais.id }}">{{ pais.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Experiencia con Argentina -->
-                    <div class="col-md-6">
-                        <label class="form-label">¿Experiencia con proveedores argentinos?</label>
-                        <select class="form-select" name="experiencia_proveedores_arg" required>
-                            <option value="" disabled selected>Seleccionar</option>
-                            <option value="true">Sí</option>
-                            <option value="false">No</option>
-                        </select>
-                    </div>
-
-                    <!-- Tipo de proveedor -->
-                    <div class="col-md-6">
-                        <label class="form-label">Tipo de proveedor de interés</label>
-                        <select class="form-select" name="tipos_proveedor" multiple required>
-                            {% for tipo in tipos_proveedor %}
-                            <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Presentación buscada -->
-                    <div class="col-md-6">
-                        <label class="form-label">Tipo de presentación buscada</label>
-                        <select class="form-select" name="presentacion_buscada">
-                            <option>A granel</option>
-                            <option>Fraccionado</option>
-                            <option>Ambos</option>
-                            <option>No aplica</option>
-                        </select>
-                    </div>
-
-                    <!-- Comentarios -->
-                    <div class="col-12">
-                        <label class="form-label">Comentarios adicionales (opcional)</label>
-                        <textarea class="form-control" name="comentarios" rows="4"></textarea>
-                    </div>
-
-                </div>
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-submit w-100 py-2">Registrarse</button>
-                </div>
-            </form>
-        </div>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg" style="background-color:#1A2042;">
+    <div class="container px-5">
+      <a class="navbar-brand text-white" href="{% url 'inicio' %}">InterMatch</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link text-white" href="{% url 'inicio' %}">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="{% url 'login' %}">Login</a></li>
+        </ul>
+      </div>
     </div>
+  </nav>
 
+  <!-- FORMULARIO -->
+  <div class="container">
+    <div class="form-section shadow-lg">
+      <h2 class="text-center mb-4">Registro Importador</h2>
+
+      <form method="post" action="{% url 'registro_importador' usuario.pk %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if messages %}
+          {% for m in messages %}
+            <div class="alert alert-{{ m.tags }} mb-3">{{ m }}</div>
+          {% endfor %}
+        {% endif %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="row g-3">
+          <!-- Razón Social -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.razon_social.id_for_label }}">Razón Social</label>
+            {{ form.razon_social }}
+            <div class="error-text">{{ form.razon_social.errors|striptags }}</div>
+          </div>
+
+          <!-- Cargo -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.cargo.id_for_label }}">Cargo</label>
+            {{ form.cargo }}
+            <div class="error-text">{{ form.cargo.errors|striptags }}</div>
+          </div>
+
+          <!-- Prefijo / Teléfono -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.prefijo_telefono.id_for_label }}">Prefijo</label>
+            {{ form.prefijo_telefono }}
+            <div class="error-text">{{ form.prefijo_telefono.errors|striptags }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.telefono.id_for_label }}">Teléfono</label>
+            {{ form.telefono }}
+            <div class="error-text">{{ form.telefono.errors|striptags }}</div>
+          </div>
+
+          <!-- País / Provincia / Localidad -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.pais_origen.id_for_label }}">País</label>
+            {{ form.pais_origen }}
+            <div class="error-text">{{ form.pais_origen.errors|striptags }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.provincia.id_for_label }}">Provincia / Estado</label>
+            {{ form.provincia }}
+            <div class="error-text">{{ form.provincia.errors|striptags }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for "{{ form.localidad.id_for_label }}">Localidad</label>
+            {{ form.localidad }}
+            <div class="error-text">{{ form.localidad.errors|striptags }}</div>
+          </div>
+
+          <!-- Empleados -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.empleados.id_for_label }}">Cantidad de empleados</label>
+            {{ form.empleados }}
+            <div class="error-text">{{ form.empleados.errors|striptags }}</div>
+          </div>
+
+          <!-- Idiomas -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.idiomas.id_for_label }}">Idiomas para negociar</label>
+            {{ form.idiomas }}
+            <div class="error-text">{{ form.idiomas.errors|striptags }}</div>
+          </div>
+
+          <!-- Sitio Web -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.sitio_web.id_for_label }}">Sitio web (opcional)</label>
+            {{ form.sitio_web }}
+            <div class="error-text">{{ form.sitio_web.errors|striptags }}</div>
+          </div>
+
+          <!-- Logo -->
+          <div class="col-md-6 text-center">
+            <label class="form-label" for="{{ form.logo.id_for_label }}">Logo de la empresa (.jpg | .png)</label>
+            {{ form.logo }}
+            <small class="form-text text-muted d-block">Tamaño máximo: 2MB.</small>
+
+            <div class="mt-3">
+              {% if form.instance.pk and form.instance.logo %}
+                <img id="logoPreview" src="{{ form.instance.logo.url }}" alt="Logo actual" width="150">
+              {% else %}
+                <img id="logoPreview" style="display:none;" width="150" alt="Preview">
+              {% endif %}
+            </div>
+            <div class="error-text">{{ form.logo.errors|striptags }}</div>
+          </div>
+
+          <!-- Tipo de Importador -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.tipo_importador.id_for_label }}">Tipo de Importador</label>
+            {{ form.tipo_importador }}
+            <div class="error-text">{{ form.tipo_importador.errors|striptags }}</div>
+          </div>
+
+          <!-- Rubros de interés -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.rubros.id_for_label }}">Rubros de interés (puede seleccionar más de uno)</label>
+            {{ form.rubros }}
+            <div class="error-text">{{ form.rubros.errors|striptags }}</div>
+          </div>
+
+          <!-- Países donde comercializa -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.paises_comercializa.id_for_label }}">
+              Indique el origen de sus proveedores actuales (puede seleccionar más de uno)
+            </label>
+            {{ form.paises_comercializa }}
+            <div class="error-text">{{ form.paises_comercializa.errors|striptags }}</div>
+          </div>
+
+          <!-- Experiencia con Argentina (booleano) -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.experiencia_proveedores_arg.id_for_label }}">
+              ¿Experiencia con proveedores argentinos?
+            </label>
+            {{ form.experiencia_proveedores_arg }}
+            <div class="error-text">{{ form.experiencia_proveedores_arg.errors|striptags }}</div>
+          </div>
+
+          <!-- Tipo de proveedor -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.tipos_proveedor.id_for_label }}">
+              Tipo de proveedor de interés (puede seleccionar más de uno)
+            </label>
+            {{ form.tipos_proveedor }}
+            <div class="error-text">{{ form.tipos_proveedor.errors|striptags }}</div>
+          </div>
+
+          <!-- Presentación buscada -->
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.presentacion_buscada.id_for_label }}">Tipo de presentación buscada</label>
+            {{ form.presentacion_buscada }}
+            <div class="error-text">{{ form.presentacion_buscada.errors|striptags }}</div>
+          </div>
+
+          <!-- Comentarios -->
+          <div class="col-12">
+            <label class="form-label" for="{{ form.comentarios.id_for_label }}">Comentarios adicionales (opcional)</label>
+            {{ form.comentarios }}
+            <div class="error-text">{{ form.comentarios.errors|striptags }}</div>
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-submit w-100 py-2">Registrarse</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JS: preview de logo -->
+  <script>
+    document.addEventListener('change', function(e){
+      if (e.target && e.target.id === '{{ form.logo.id_for_label }}') {
+        const file = e.target.files?.[0];
+        const preview = document.getElementById('logoPreview');
+        if (file && preview) {
+          const url = URL.createObjectURL(file);
+          preview.src = url;
+          preview.style.display = 'block';
+        }
+      }
+    });
+  </script>
+
+  <!-- JS: dependientes país → provincia → localidad -->
+  <script>
+    const $pais = document.getElementById('id_pais_origen');
+    const $prov = document.getElementById('id_provincia');
+    const $loc  = document.getElementById('id_localidad');
+
+    // Ajustá BASE si tus rutas cuelgan de /gestion/
+    const BASE = ''; // o '/gestion'
+
+    async function getJSON(url) {
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!res.ok) { console.error('HTTP', res.status, url); return []; }
+      try { return await res.json(); } catch (e) { console.error('No JSON', url, e); return []; }
+    }
+
+    $pais?.addEventListener('change', async () => {
+      const paisId = $pais.value;
+      $prov.innerHTML = '<option value="">Cargando…</option>';
+      $loc.innerHTML  = '<option value="">—</option>';
+      if (!paisId) { $prov.innerHTML = '<option value="">—</option>'; return; }
+
+      const provincias = await getJSON(`${BASE}/api/provincias/${paisId}/`);
+      $prov.innerHTML = provincias.length
+        ? provincias.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('')
+        : '<option value="">(sin datos)</option>';
+    });
+
+    $prov?.addEventListener('change', async () => {
+      const provId = $prov.value;
+      $loc.innerHTML = '<option value="">Cargando…</option>';
+      if (!provId) { $loc.innerHTML = '<option value="">—</option>'; return; }
+
+      const locs = await getJSON(`${BASE}/api/localidades/${provId}/`);
+      $loc.innerHTML = locs.length
+        ? locs.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('')
+        : '<option value="">(sin datos)</option>';
+    });
+  </script>
 </body>
-
 </html>

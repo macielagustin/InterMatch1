@@ -1,59 +1,81 @@
 {% extends "gestion/base.html" %}
-
 {% block title %}Agendar Reunión{% endblock %}
 
 {% block content %}
 <div class="container py-5" style="max-width: 700px;">
-    <div class="card p-4" style="background-color:#1A2042; border:1px solid rgba(255,255,255,.1); border-radius:16px;">
+  <div class="card p-4" style="background-color:#1A2042; border:1px solid rgba(255,255,255,.1); border-radius:16px;">
+    <h2 class="mb-4" style="color:#EB7DBF; font-family:'Black Black italic',sans-serif;">
+      Agendar reunión con {{ nombre_receptor }}
+    </h2>
 
-        <h2 class="mb-4" style="color:#EB7DBF; font-family:'Black Black italic',sans-serif;">
-            Agendar reunión con {{ nombre_receptor }}
-        </h2>
+    <form method="POST" id="form-reunion">
+      {% csrf_token %}
+      <!-- Este hidden sirve para distinguir un "refresh" de horarios -->
+      <input type="hidden" name="refresh" id="refresh-flag" value="">
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+      <!-- Fecha habilitada -->
+      <div class="mb-3">
+        <label for="id_fecha" class="form-label" style="color:white;">Seleccionar fecha</label>
+        {{ form.fecha }}
+        {% if form.fecha.errors %}
+          <div class="text-danger small">{{ form.fecha.errors }}</div>
+        {% endif %}
+      </div>
 
-            <!-- Horario disponible -->
-            <div class="mb-3">
-                <label for="id_horario" class="form-label" style="color:white;">Seleccionar horario</label>
-                {{ form.horario }}
-                {% if form.horario.errors %}
-                <div class="text-danger small">{{ form.horario.errors }}</div>
-                {% endif %}
-            </div>
+      <!-- Horario disponible de la fecha elegida -->
+      <div class="mb-3">
+        <label for="id_horario" class="form-label" style="color:white;">Seleccionar horario</label>
+        {{ form.horario }}
+        {% if form.horario.errors %}
+          <div class="text-danger small">{{ form.horario.errors }}</div>
+        {% endif %}
+      </div>
 
-            <!-- Mensaje opcional -->
-            <div class="mb-3">
-                <label for="id_mensaje" class="form-label" style="color:white;">Mensaje (opcional)</label>
-                {{ form.mensaje }}
-            </div>
+      <!-- Mensaje opcional -->
+      <div class="mb-3">
+        <label for="id_mensaje" class="form-label" style="color:white;">Mensaje (opcional)</label>
+        {{ form.mensaje }}
+        {% if form.mensaje.errors %}
+          <div class="text-danger small">{{ form.mensaje.errors }}</div>
+        {% endif %}
+      </div>
 
-            <div class="d-flex gap-3 mt-4">
-                <button type="submit" class="btn"
-                    style="background:#EB7DBF; color:white; border:none; padding:10px 20px; font-weight:600; border-radius:10px;">
-                    Confirmar Reunión
-                </button>
-            </div>
-        </form>
-    </div>
+      <div class="d-flex gap-3 mt-4">
+        <button type="submit" class="btn" name="confirmar" value="1"
+          style="background:#EB7DBF; color:white; border:none; padding:10px 20px; font-weight:600; border-radius:10px;">
+          Confirmar Reunión
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- Estilo para inputs -->
 <style>
-    select,
-    textarea,
-    input[type="text"] {
-        background-color: #0f1330 !important;
-        color: white !important;
-        border: 1px solid rgba(235, 125, 191, .4) !important;
-        border-radius: 10px !important;
-        padding: 10px !important;
-    }
-
-    select:focus,
-    textarea:focus {
-        outline: none !important;
-        box-shadow: 0 0 0 3px rgba(235, 125, 191, .35);
-    }
+  select, textarea, input[type="text"]{
+    background-color:#0f1330 !important;
+    color:white !important;
+    border:1px solid rgba(235,125,191,.4) !important;
+    border-radius:10px !important;
+    padding:10px !important;
+  }
+  select:focus, textarea:focus{
+    outline:none !important;
+    box-shadow:0 0 0 3px rgba(235,125,191,.35);
+  }
 </style>
+
+<script>
+  // Cuando cambia la fecha, reenviamos el form marcando "refresh"
+  const fechaSelect = document.getElementById('id_fecha');
+  const form = document.getElementById('form-reunion');
+  const refreshFlag = document.getElementById('refresh-flag');
+
+  if (fechaSelect) {
+    fechaSelect.addEventListener('change', function () {
+      refreshFlag.value = '1';
+      form.submit();
+    });
+  }
+</script>
 {% endblock %}

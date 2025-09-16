@@ -1,97 +1,191 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Perfil del Importador</title>
   <style>
-    :root{
-      --bg:#222A59;
-      --panel:#1A2042;
-      --accent:#EB7DBF;
-      --ink:#fff;
-      --muted:#cfd3ff;
-      --panel-ink:#e9ebff;
+    :root {
+      --bg: #222A59;
+      --panel: #1A2042;
+      --accent: #EB7DBF;
+      --ink: #fff;
+      --muted: #cfd3ff;
+      --panel-ink: #e9ebff;
     }
+
     /* Base */
-    body{
-      background-color:var(--bg);
-      color:var(--ink);
-      font-family:'Thin Thin italic',sans-serif;
-      margin:0; padding:0;
+    body {
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: 'Thin Thin italic', sans-serif;
+      margin: 0;
+      padding: 0;
     }
+
     /* Header (oscuro, título rosa) */
-    header{
-      background-color:var(--panel);
-      padding:20px; text-align:center;
+    header {
+      background-color: var(--panel);
+      padding: 20px;
+      text-align: center;
     }
-    header h1, h2, h3{
-      font-family:'Black Black italic',sans-serif;
-      color:var(--accent); margin:0;
+
+    header h1,
+    h2,
+    h3 {
+      font-family: 'Black Black italic', sans-serif;
+      color: var(--accent);
+      margin: 0;
     }
 
     /* Layout */
-    .panel-container{ display:flex; min-height:100vh; }
-    .sidebar{
-      width:260px; background-color:var(--panel);
-      padding:20px; display:flex; flex-direction:column; gap:12px;
-      position:sticky; top:0; height:100vh;
+    .panel-container {
+      display: flex;
+      min-height: 100vh;
     }
-    .sidebar a{
-      color:var(--ink); text-decoration:none; font-size:1.05rem;
-      padding:10px 12px; border-radius:10px; transition:.25s;
-      display:block;
+
+    .sidebar {
+      width: 260px;
+      background-color: var(--panel);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
     }
-    .sidebar a:hover{ background:var(--accent); color:var(--bg); font-weight:700; }
-    .content{ flex:1; padding:40px; }
+
+    .sidebar a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 1.05rem;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: .25s;
+      display: block;
+    }
+
+    .sidebar a:hover {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px;
+    }
 
     /* Tarjetas/sections */
-    .info-box{
-      background-color:var(--panel);
-      color:var(--panel-ink);
-      padding:22px; border-radius:16px; margin-bottom:20px;
-      border:1px solid rgba(255,255,255,.08);
+    .info-box {
+      background-color: var(--panel);
+      color: var(--panel-ink);
+      padding: 22px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, .08);
     }
-    .section-title{
-      color:var(--accent);
-      font-family:'Black Black italic',sans-serif;
-      font-size:1.15rem; margin:0 0 12px 0;
-    }
-    .row{ display:flex; flex-wrap:wrap; gap:16px; }
-    .col{ flex:1 1 260px; }
 
-    .label{ color:var(--muted); min-width:160px; }
-    .pair{ display:flex; justify-content:space-between; gap:16px; margin:8px 0; }
-    .divider{ height:1px; background:rgba(255,255,255,.08); margin:14px 0; }
+    .section-title {
+      color: var(--accent);
+      font-family: 'Black Black italic', sans-serif;
+      font-size: 1.15rem;
+      margin: 0 0 12px 0;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .col {
+      flex: 1 1 260px;
+    }
+
+    .label {
+      color: var(--muted);
+      min-width: 160px;
+    }
+
+    .pair {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 8px 0;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, .08);
+      margin: 14px 0;
+    }
 
     /* Badges para listas (idiomas, rubros, países, tipos proveedor) */
-    .chips{ display:flex; flex-wrap:wrap; gap:8px; }
-    .chip{
-      background:rgba(235,125,191,.18);
-      border:1px solid rgba(235,125,191,.35);
-      color:#ffffff; padding:6px 10px; border-radius:10px; font-size:.9rem;
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      background: rgba(235, 125, 191, .18);
+      border: 1px solid rgba(235, 125, 191, .35);
+      color: #ffffff;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: .9rem;
     }
 
     /* Avatar/logo */
-    .header-card{
-      display:flex; align-items:center; gap:18px; flex-wrap:wrap;
-      background:var(--panel); border-radius:16px; padding:22px; margin-bottom:22px;
-      border:1px solid rgba(255,255,255,.08);
+    .header-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 22px;
+      border: 1px solid rgba(255, 255, 255, .08);
     }
-    .avatar{
-      width:92px; height:92px; border-radius:16px; object-fit:cover;
-      border:2px solid rgba(235,125,191,.5); background:#0f1330;
+
+    .avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 16px;
+      object-fit: cover;
+      border: 2px solid rgba(235, 125, 191, .5);
+      background: #0f1330;
     }
-    .link{ color:var(--muted); text-decoration:underline; }
+
+    .link {
+      color: var(--muted);
+      text-decoration: underline;
+    }
 
     /* Responsive */
-    @media (max-width: 992px){
-      .sidebar{ position:static; height:auto; width:100%; border-bottom:1px solid rgba(255,255,255,.08); }
-      .panel-container{ flex-direction:column; }
-      .content{ padding:24px; }
+    @media (max-width: 992px) {
+      .sidebar {
+        position: static;
+        height: auto;
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, .08);
+      }
+
+      .panel-container {
+        flex-direction: column;
+      }
+
+      .content {
+        padding: 24px;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Header -->
@@ -106,8 +200,6 @@
       <a href="{% url 'perfil_importador' %}">Ver perfil</a>
       <a href="{% url 'editar_importador' %}">Editar datos</a>
       <a href="{% url 'empresas_disponibles' %}">Ver Empresas</a>
-      <a href="{% url 'reuniones_importador' %}">Reuniones</a>
-      <a href="#">Exportar</a>
       <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
     </nav>
 
@@ -117,9 +209,9 @@
       <!-- Encabezado del perfil con logo + datos clave -->
       <div class="header-card">
         {% if importador.logo %}
-          <img class="avatar" src="{{ importador.logo.url }}" alt="Logo {{ importador.razon_social }}">
+        <img class="avatar" src="{{ importador.logo.url }}" alt="Logo {{ importador.razon_social }}">
         {% else %}
-          <img class="avatar" src="{% static 'img/logo_placeholder.png' %}" alt="Logo">
+        <img class="avatar" src="{% static 'img/logo_placeholder.png' %}" alt="Logo">
         {% endif %}
 
         <div class="grow">
@@ -129,11 +221,11 @@
             · {{ importador.pais_origen.nombre|default:"País no especificado" }}
           </div>
           {% if importador.sitio_web %}
-            <div style="margin-top:6px">
-              <a class="link" href="{{ importador.sitio_web }}" target="_blank" rel="noopener">
-                {{ importador.sitio_web }}
-              </a>
-            </div>
+          <div style="margin-top:6px">
+            <a class="link" href="{{ importador.sitio_web }}" target="_blank" rel="noopener">
+              {{ importador.sitio_web }}
+            </a>
+          </div>
           {% endif %}
         </div>
       </div>
@@ -149,9 +241,10 @@
 
           <div class="divider"></div>
           <h3 class="section-title">Ubicación</h3>
-          <div class="pair"><span class="label">País</span><span>{{ importador.pais_origen.nombre|default:"—" }}</span></div>
-          <div class="pair"><span class="label">Provincia / Estado</span><span>{{ importador.provincia.nombre|default:"—" }}</span></div>
-          <div class="pair"><span class="label">Localidad</span><span>{{ importador.localidad.nombre|default:"—" }}</span></div>
+          <div class="pair"><span class="label">País</span><span>{{ importador.pais_origen.nombre|default:"—" }}</span>
+          </div>
+          <div class="pair"><span class="label">Provincia / Estado</span><span>{{ importador.provincia.nombre }}</span></div>
+          <div class="pair"><span class="label">Localidad</span><span>{{ importador.localidad.nombre }}</span></div>
         </section>
 
         <!-- Preferencias comerciales -->
@@ -161,7 +254,7 @@
           <div class="label" style="margin-bottom:6px">Idiomas para negociar</div>
           <div class="chips">
             {% for i in importador.idiomas.all %}
-              <span class="chip">{{ i.nombre }}</span>
+            <span class="chip">{{ i.nombre }}</span>
             {% empty %}<span style="opacity:.6">—</span>{% endfor %}
           </div>
 
@@ -170,12 +263,13 @@
           <div class="label" style="margin-bottom:6px">Rubros de interés</div>
           <div class="chips">
             {% for r in importador.rubros.all %}
-              <span class="chip">{{ r.nombre }}</span>
+            <span class="chip">{{ r.nombre }}</span>
             {% empty %}<span style="opacity:.6">—</span>{% endfor %}
           </div>
 
           <div class="divider"></div>
-          <div class="pair"><span class="label">Presentación buscada</span><span>{{ importador.presentacion_buscada|default:"—" }}</span></div>
+          <div class="pair"><span class="label">Presentación buscada</span>
+            <span>{{ importador.presentacion_buscada|default:"—" }}</span></div>
         </section>
 
       </div>
@@ -188,7 +282,7 @@
           <div class="col">
             <div class="pair">
               <span class="label">Empleados</span>
-              <span>{{ importador.empleados|default:importador.cantidad_empleados|default:"—" }}</span>
+              <span>{{ importador.empleados|default:importador.empleados|default:"—" }}</span>
             </div>
           </div>
 
@@ -197,9 +291,9 @@
               <span class="label">Experiencia con Argentina</span>
               <span>
                 {% if importador.experiencia_proveedores_arg %}
-                  Sí
+                Sí
                 {% elif importador.experiencia_proveedores_arg == False %}
-                  No
+                No
                 {% else %}—{% endif %}
               </span>
             </div>
@@ -209,7 +303,7 @@
             <div class="label" style="margin-bottom:6px">Países donde comercializa</div>
             <div class="chips">
               {% for p in importador.paises_comercializa.all %}
-                <span class="chip">{{ p.nombre }}</span>
+              <span class="chip">{{ p.nombre }}</span>
               {% empty %}<span style="opacity:.6">—</span>{% endfor %}
             </div>
           </div>
@@ -228,4 +322,5 @@
   </div>
 
 </body>
+
 </html>

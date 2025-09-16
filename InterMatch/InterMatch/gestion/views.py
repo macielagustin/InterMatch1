@@ -3,14 +3,23 @@ from .models import Usuario, Provincia, Localidad, Pais,  Rubro, Certificacion, 
 from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 from django.contrib.auth import login 
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.conf import settings
-from .forms import UsuarioForm, EmpresaExportadoraForm, ImportadorForm, ReunionForm, FechaDisponibleForm, HorarioDisponibleForm
+from django.db import transaction, IntegrityError
+from django.db.models import ProtectedError
+from .forms import UsuarioForm, EmpresaExportadoraForm, ImportadorForm, ReunionForm, FechaDisponibleForm, HorarioDisponibleForm, horarios_disponibles, CrearReunionForm, AdminReunionForm, PasswordResetRequestForm, SetPasswordForm, UsuarioAdminForm
 from .models import Importador, Usuario, EmpresaCertificacion, Reunion , FechaDisponible, ConfiguracionSistema
 from django.core.mail import send_mail, EmailMessage
+from django.core import signing
+from django.contrib.sites.shortcuts import get_current_site
 import openpyxl
+from .emails import enviar_correos_reunion_creada
+from django.http import FileResponse, Http404
+from django.utils.encoding import smart_str
+from django.shortcuts import get_object_or_404
+from .models import EmpresaExportadora
 
 
 def inicio(request):
@@ -80,6 +89,95 @@ def login_view(request):
 def logout_view(request):
     request.session.flush()  # Elimina toda la sesión
     return redirect('login')  # Redirige al login o al inicio, según prefieras
+
+###################################################
+###### RECUPERAR CONTRASEÑA #######################
+###################################################
+
+# Config de firma
+RESET_SALT = "intermatch-password-reset"
+RESET_MAX_AGE = 60 * 60 * 24  # 24 horas
+
+def _build_reset_link(request, token):
+    domain = get_current_site(request).domain
+    protocol = 'https' if request.is_secure() else 'http'
+    return f"{protocol}://{domain}/recuperar/{token}/"
+
+def password_reset_request(request):
+    """
+    1) Usuario ingresa email o username.
+    2) Si existe, se envía mail con link firmado con expiración.
+    3) Siempre redirige a 'enviado' (no revela si existe o no).
+    """
+    if request.method == "POST":
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            identificador = form.cleaned_data['identificador'].strip()
+            usuario = Usuario.objects.filter(email__iexact=identificador).first()
+            if not usuario:
+                usuario = Usuario.objects.filter(username__iexact=identificador).first()
+
+            # Genera y envía el mail solo si existe, pero no revelamos nada al usuario final
+            if usuario:
+                payload = {'uid': usuario.usuario_id, 'ts': timezone.now().timestamp()}
+                token = signing.dumps(payload, salt=RESET_SALT)
+                link = _build_reset_link(request, token)
+
+                asunto = "Recuperación de contraseña - InterMatch"
+                cuerpo = (
+                    f"Hola {usuario.username},\n\n"
+                    f"Recibimos una solicitud para restablecer tu contraseña.\n"
+                    f"Hacé clic en el siguiente enlace (válido por 24 horas):\n\n{link}\n\n"
+                    "Si no fuiste vos, ignorá este correo."
+                )
+                send_mail(
+                    subject=asunto,
+                    message=cuerpo,
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER),
+                    recipient_list=[usuario.email],
+                    fail_silently=True,
+                )
+
+            return redirect('password_reset_done')
+    else:
+        form = PasswordResetRequestForm()
+
+    return render(request, 'gestion/password_reset.html', {'form': form})
+
+def password_reset_done(request):
+    return render(request, 'gestion/password_reset_done.html')
+
+def password_reset_confirm(request, token):
+    """
+    Valida el token firmado y no vencido.
+    Si es válido, muestra formulario para setear nueva contraseña.
+    """
+    try:
+        data = signing.loads(token, salt=RESET_SALT, max_age=RESET_MAX_AGE)
+        uid = data.get('uid')
+    except signing.BadSignature:
+        messages.error(request, "El enlace no es válido o ha sido manipulado.")
+        return redirect('password_reset_request')
+    except signing.SignatureExpired:
+        messages.error(request, "El enlace ha expirado. Solicitá uno nuevo.")
+        return redirect('password_reset_request')
+
+    usuario = get_object_or_404(Usuario, pk=uid)
+
+    if request.method == 'POST':
+        form = SetPasswordForm(request.POST)
+        if form.is_valid():
+            nueva = form.cleaned_data['password1']
+            usuario.password = make_password(nueva)
+            usuario.save()
+            return redirect('password_reset_complete')
+    else:
+        form = SetPasswordForm()
+
+    return render(request, 'gestion/password_reset_confirm.html', {'form': form})
+
+def password_reset_complete(request):
+    return render(request, 'gestion/password_reset_complete.html')
 
 #######################################################
 ############ REGISTROS ###############################
@@ -191,55 +289,66 @@ def ir_a_registro(request):
 
 
 def registro_importador(request, usuario_id):
+    # Si preferís sesión:
+    # usuario_id = request.session.get('usuario_id')
+    # if not usuario_id: return redirect('login')
+
     usuario = get_object_or_404(Usuario, pk=usuario_id)
+
+    # (Opcional pero recomendado) Evitar 2 importadores para el mismo usuario
+    if Importador.objects.filter(usuario=usuario).exists():
+        messages.info(request, "Este usuario ya tiene un registro de Importador.")
+        return redirect('login')  # o a su panel
 
     if request.method == 'POST':
         form = ImportadorForm(request.POST, request.FILES)
         if form.is_valid():
-            importador = form.save(commit=False)
-            importador.usuario = usuario
-            importador.save()
-            form.save_m2m()  # Para idiomas, rubros, paises_comercializa, tipos_proveedor
+            try:
+                with transaction.atomic():
+                    importador = form.save(commit=False)
+                    importador.usuario = usuario  # ✅ asignar instancia
+                    importador.save()
+                    form.save_m2m()  # ✅ M2M luego del save()
 
-            usuario.rol = 'Importador'
-            usuario.save()
+                    # Actualizar rol
+                    usuario.rol = 'Importador'
+                    usuario.save(update_fields=['rol'])
 
-            enviar_correo_confirmacion_registro(
-                destinatario_email= usuario.email,
-                nombre_usuario=usuario.nombre,
-                tipo_usuario='Importador'
-            )
+                # Enviar correo
+                enviar_correo_confirmacion_registro(
+                    destinatario_email=usuario.email,
+                    nombre_usuario=usuario.nombre,
+                    tipo_usuario='Importador'
+                )
 
-            return redirect('registro_exitoso')
+                messages.success(request, "¡Importador registrado correctamente!")
+                return redirect('registro_exitoso')
+
+            except IntegrityError:
+                messages.error(request, "Ocurrió un problema al guardar. Intentá nuevamente.")
         else:
+            # Log de errores en consola y feedback en template
             print("errores en el formulario:", form.errors)
+            messages.error(request, "Revisá los campos del formulario.")
     else:
         form = ImportadorForm()
 
-    context = {
-        'form': form,
-        'paises': Pais.objects.all(),
-        'provincias': Provincia.objects.all(),
-        'localidades': Localidad.objects.all(),
-        'usuario_id': usuario.usuario_id,
-        'idiomas': Idioma.objects.all(),
-        'rubros': Rubro.objects.all(),
-        'tipos_proveedor': TipoProveedor.objects.all(),
-    }
-    return render(request, 'gestion/registro_importador.html', context)
+    return render(request, 'gestion/registro_importador.html', {'form': form, 'usuario': usuario})
+
 
 
 from django.http import JsonResponse
+from .models import Provincia, Localidad
 
-def provincias_por_pais(request):
-    pais_nombre = request.GET.get('pais')
-    provincias = Provincia.objects.filter(pais__nombre__iexact=pais_nombre).values('nombre')
-    return JsonResponse(list(provincias), safe=False)
+def provincias_por_pais_id(request, pais_id):
+    qs = Provincia.objects.filter(pais_id=pais_id).order_by('nombre')
+    data = list(qs.values('id', 'nombre'))
+    return JsonResponse(data, safe=False)
 
-def localidades_por_provincia(request):
-    provincia_nombre = request.GET.get('provincia')
-    localidades = Localidad.objects.filter(provincia__nombre__iexact=provincia_nombre).values('nombre')
-    return JsonResponse(list(localidades), safe=False)
+def localidades_por_provincia_id(request, provincia_id):
+    qs = Localidad.objects.filter(provincia_id=provincia_id).order_by('nombre')
+    data = list(qs.values('id', 'nombre'))
+    return JsonResponse(data, safe=False)
 
 #                       #
 #   PANEL DE EMPRESA    #
@@ -307,14 +416,16 @@ def detalle_importador(request, importador_id):
 #                           #
 @login_required(login_url='login')
 def panel_importador_view(request):
+    user = request.user
+    
     try:
-        importador = Importador.objects.get(usuario=request.user)
-        nombre_importador = importador.razon_social
+        importador = Importador.objects.select_related('usuario').get(usuario=user)
     except Importador.DoesNotExist:
-        return redirect('registro_importador', usuario_id=request.user.id)
+        return redirect('registro_importador', usuario_id=user.usuario_id)
 
     return render(request, 'gestion/panel_importador.html', {
-        'razon_social': nombre_importador,
+        'importador': importador,
+        'razon_social': importador.razon_social
     })
 
 @login_required
@@ -336,56 +447,65 @@ def _to_int_or_none(val):
     except (TypeError, ValueError):
         return None
 
-@login_required
-def editar_importador(request):
-    # Usuario desde la sesión (tu esquema actual)
-    usuario_id = request.session.get('usuario_id')
-    usuario = get_object_or_404(Usuario, usuario_id=usuario_id)
+def _clean_ids(raw_list):
+    # quita vacíos/espacios y castea a int
+    return [int(x) for x in raw_list if str(x).strip().isdigit()]
 
-    importador = Importador.objects.filter(usuario=usuario).first()
-    if not importador:
-        return redirect('registro_importador', usuario_id=usuario.id)
+@login_required(login_url='login')
+def editar_importador(request):
+    usuario_id = request.session.get('usuario_id')
+    user = get_object_or_404(Usuario, usuario_id=usuario_id)
+    importador = get_object_or_404(Importador, usuario=user)
 
     if request.method == 'POST':
-        # Campos simples
         importador.telefono = request.POST.get('telefono') or ""
         importador.sitio_web = request.POST.get('sitio_web') or ""
         importador.comentarios = request.POST.get('comentarios') or ""
+        importador.cantidad_empleados = _to_int_or_none(request.POST.get('cantidad_empleados'))
 
-        # Empleados (tu modelo usa 'cantidad_empleados'; si tenés 'empleados', ajustá aquí)
-        cant = request.POST.get('cantidad_empleados')
-        importador.cantidad_empleados = _to_int_or_none(cant)
-
-        # Archivo
-        if 'logo' in request.FILES and request.FILES['logo']:
+        if request.FILES.get('logo'):
             importador.logo = request.FILES['logo']
+        importador.save()
 
-        importador.save()  # guardar antes de M2M
-
-        # ManyToMany (asegurate que en el form los name= coincidan)
-        rubros_ids = request.POST.getlist('rubros')
-        paises_ids = request.POST.getlist('paises_comercializa')
+        # M2M
+        rubros_ids  = _clean_ids(request.POST.getlist('rubros'))
+        paises_ids  = _clean_ids(request.POST.getlist('paises_comercializa'))
+        idiomas_ids = _clean_ids(request.POST.getlist('idiomas'))
+        tipos_ids   = _clean_ids(request.POST.getlist('tipos_proveedor'))
 
         if rubros_ids is not None:
-            importador.rubros.set(Rubro.objects.filter(id__in=rubros_ids))
+            importador.rubros.set(Rubro.objects.filter(pk__in=rubros_ids))
         if paises_ids is not None:
-            importador.paises_comercializa.set(Pais.objects.filter(id__in=paises_ids))
+            importador.paises_comercializa.set(Pais.objects.filter(pk__in=paises_ids))
+        if idiomas_ids is not None:
+            importador.idiomas.set(Idioma.objects.filter(pk__in=idiomas_ids))
+        if tipos_ids is not None:
+            importador.tipos_proveedor.set(TipoProveedor.objects.filter(pk__in=tipos_ids))
 
         messages.success(request, "¡Perfil actualizado correctamente!")
         return redirect('perfil_importador')
 
-    # GET → solo los catálogos necesarios para los M2M que editás
-    contexto = {
+    ctx = {
         'importador': importador,
         'rubros': Rubro.objects.all().order_by('nombre'),
         'paises': Pais.objects.all().order_by('nombre'),
+        'idiomas': Idioma.objects.all().order_by('nombre'),
+        'tipos_proveedor': TipoProveedor.objects.all().order_by('nombre'),
     }
-    return render(request, 'gestion/editar_importador.html', contexto)
+    return render(request, 'gestion/editar_importador.html', ctx)
 
 @login_required
 def empresas_disponibles(request):
     empresas = EmpresaExportadora.objects.select_related('provincia', 'localidad').prefetch_related('rubro', 'certificaciones')
     return render (request, 'gestion/empresas_disponibles.html', {'empresas': empresas})
+
+def descargar_brochure(request, empresa_id):
+    empresa = get_object_or_404(EmpresaExportadora, pk=empresa_id)
+    if not empresa.brochure:
+        raise Http404("Sin brochure")
+    f = empresa.brochure.open('rb')
+    nombre = f"Brochure_{empresa.razon_social}.pdf"
+    return FileResponse(f, as_attachment=True, filename=smart_str(nombre))
 
 @login_required
 def detalle_empresa(request, empresa_id):
@@ -428,6 +548,57 @@ def lista_usuarios_admin(request):
         usuarios = Usuario.objects.all()
 
     return render(request, 'gestion/admin/lista_usuarios.html', {'usuarios': usuarios, 'rol_filtro': rol_filtro})
+
+@login_required
+def editar_usuario_admin(request, usuario_id):
+    if not _require_admin(request):
+        return redirect('login')
+
+    usuario = get_object_or_404(Usuario, pk=usuario_id)  # si tu PK es usuario_id, Django igual lo mapea a pk
+    if request.method == 'POST':
+        form = UsuarioAdminForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Usuario actualizado correctamente.")
+            return redirect('lista_usuarios_admin')
+        messages.error(request, "Revisá los datos del formulario.")
+    else:
+        form = UsuarioAdminForm(instance=usuario)
+
+    return render(request, 'gestion/admin/editar_usuario.html', {
+        'form': form,
+        'obj': usuario,
+    })
+
+def _require_admin(request):
+    if not request.user.is_authenticated or getattr(request.user, 'rol', '') != 'Administrador':
+        messages.error(request, "No tenés permisos para esta acción.")
+        return False
+    return True
+
+@login_required
+def eliminar_usuario_admin(request, usuario_id):
+    if not _require_admin(request):
+        return redirect('login')
+
+    if request.method != 'POST':
+        messages.warning(request, "Método no permitido.")
+        return redirect('lista_usuarios_admin')
+
+    usuario = get_object_or_404(Usuario, pk=usuario_id)
+
+    # Evitar que un admin se elimine a sí mismo (opcional pero recomendado)
+    if getattr(request.user, 'pk', None) == usuario.pk:
+        messages.error(request, "No podés eliminar tu propio usuario.")
+        return redirect('lista_usuarios_admin')
+
+    try:
+        with transaction.atomic():
+            usuario.delete()
+        messages.success(request, "Usuario eliminado correctamente.")
+    except ProtectedError:
+        messages.error(request, "No se puede eliminar: tiene datos relacionados (empresa/importador/reuniones).")
+    return redirect('lista_usuarios_admin')
 
 @login_required(login_url='login')
 def gestionar_fechas(request):
@@ -516,33 +687,51 @@ def gestionar_reuniones(request):
 
 @login_required(login_url='login')
 def editar_reunion(request, reunion_id):
-    if request.user.rol != 'Administrador':
+    # Validación de rol admin (ajusta a tu modelo de usuario)
+    if getattr(request.user, 'rol', None) != 'Administrador':
         return redirect('login')
 
     reunion = get_object_or_404(Reunion, id=reunion_id)
 
     if request.method == 'POST':
-        form = ReunionForm(request.POST, instance=reunion)
+        form = AdminReunionForm(request.POST, instance=reunion)
         if form.is_valid():
-            form.save()
-            return redirect('gestionar_reuniones')
+            try:
+                with transaction.atomic():
+                    form.save()  # clean() ya valida disponibilidad; unique_together evita duplicado
+                messages.success(request, "Reunión actualizada correctamente.")
+                return redirect('gestionar_reuniones')
+            except IntegrityError:
+                messages.error(request, "Otro usuario tomó ese (fecha, horario) recién. Elegí otro.")
+        else:
+            messages.error(request, "Revisá los errores del formulario.")
     else:
-        form = ReunionForm(instance=reunion)
+        form = AdminReunionForm(instance=reunion)
 
     return render(request, 'gestion/editar_reunion.html', {'form': form, 'reunion': reunion})
 
 @login_required(login_url='login')
 def eliminar_reunion(request, reunion_id):
-    if request.user.rol != 'Administrador':
+    if getattr(request.user, 'rol', None) != 'Administrador':
         return redirect('login')
 
     reunion = get_object_or_404(Reunion, id=reunion_id)
 
     if request.method == 'POST':
-        reunion.delete()
+        reunion.delete()  # al borrar, el horario queda libre implícitamente
+        from django.contrib import messages
+        messages.info(request, "Reunión eliminada.")
         return redirect('gestionar_reuniones')
 
     return render(request, 'gestion/eliminar_reunion.html', {'reunion': reunion})
+
+@login_required(login_url='login')
+def toggle_habilitada(request, fecha_id):
+    fecha = get_object_or_404(FechaDisponible, id=fecha_id)
+    fecha.habilitada = not fecha.habilitada
+    fecha.save(update_fields=['habilitada'])
+    messages.success(request, f"Fecha {('habilitada' if fecha.habilitada else 'deshabilitada')}.")
+    return redirect('gestionar_fechas')
 
 @login_required(login_url='login')
 def exportar_reuniones_excel(request):
@@ -655,91 +844,96 @@ def difusion_admin_view(request):
 
 @login_required(login_url='login')
 def crear_reunion(request, tipo_receptor, receptor_id):
-    usuario_id = request.session.get('usuario_id')
+    usuario = get_object_or_404(Usuario, usuario_id=request.session.get('usuario_id'))
     rol = request.session.get('rol')
 
-    if not usuario_id or not rol:
-        return redirect('login')
-
-    usuario = get_object_or_404(Usuario, usuario_id=usuario_id)
-    fecha_reunion = timezone.now().date()  # ✅ Ahora está disponible en todo el scope
-
-    # Inicializar variables
-    reunion = None
-    empresa = None
-    importador = None
-
+    empresa = importador = None
     if rol == 'Importador' and tipo_receptor == 'empresa':
         importador = get_object_or_404(Importador, usuario=usuario)
-        empresa = get_object_or_404(EmpresaExportadora, empresa_id=receptor_id)
-        reunion = Reunion(importador=importador, empresa=empresa)
-
+        empresa = get_object_or_404(EmpresaExportadora, pk=receptor_id)
+        nombre_receptor = str(empresa)
     elif rol == 'Empresa Exportadora' and tipo_receptor == 'importador':
         empresa = get_object_or_404(EmpresaExportadora, usuario=usuario)
-        importador = get_object_or_404(Importador, id=receptor_id)
-        reunion = Reunion(importador=importador, empresa=empresa)
+        importador = get_object_or_404(Importador, pk=receptor_id)
+        nombre_receptor = str(importador)
     else:
-        return redirect('login')  # Seguridad extra
+        messages.error(request, "No tenés permisos para crear esta reunión.")
+        return redirect('inicio')
 
-    if request.method == 'POST':
-        form = ReunionForm(request.POST, instance=reunion)
-        if form.is_valid():
-            nueva_reunion = form.save(commit=False)
-            nueva_reunion.fecha = fecha_reunion  # ⏰ Fecha fija configurada
-            nueva_reunion.save()
-            form.save_m2m()
+    # Traer fechas habilitadas
+    fechas_hab = FechaDisponible.objects.filter(habilitada=True).order_by('fecha')
+    if not fechas_hab.exists():
+        messages.warning(request, "No hay fechas habilitadas por el administrador.")
+        return redirect('panel_empresa' if rol == 'Empresa Exportadora' else 'panel_importador')  # o donde corresponda
 
-            from django.core.mail import send_mail
-            from django.conf import settings
+    fecha_default_inst = fechas_hab.first()           # instancia
+    fecha_default_date = fecha_default_inst.fecha     # date real
 
-            asunto = 'Confirmacion de Reunion - InterMatch'
-            mensaje = f'''
-        Hola!
+    if request.method == 'GET':
+        # ⬅️ SETEAR INITIAL para que el select quede en la 1ª fecha y se carguen horarios
+        form = CrearReunionForm(
+            initial={'fecha': fecha_default_inst.pk},
+            fecha_seleccionada=fecha_default_date
+        )
+        return render(request, 'gestion/crear_reunion.html', {
+            'form': form,
+            'nombre_receptor': nombre_receptor
+        })
 
-        Se ha confirmado la reunion entre:
-        Empresa: {empresa.razon_social}
-        Importador: {importador.razon_social}
-        Fecha: {nueva_reunion.fecha.strftime('%d/%m/%Y')}
-        Horario: {nueva_reunion.horario.hora.strftime('%H:%M')}
-        Mensaje: {nueva_reunion.mensaje or "Sin Mensaje"}
+    # POST
+    # ⬅️ REFRESH: no dependas de is_valid(); lee la fecha del POST y recalculá horarios
+    if request.POST.get('refresh'):
+        form = CrearReunionForm(request.POST)
+        # Intentar obtener la fecha elegida del POST (id de FechaDisponible)
+        fecha_pk = request.POST.get('fecha')
+        fecha_sel_date = None
+        if fecha_pk:
+            try:
+                fecha_sel_date = FechaDisponible.objects.get(pk=fecha_pk).fecha
+            except FechaDisponible.DoesNotExist:
+                pass
+        form = CrearReunionForm(request.POST, fecha_seleccionada=fecha_sel_date or fecha_default_date)
+        return render(request, 'gestion/crear_reunion.html', {
+            'form': form,
+            'nombre_receptor': nombre_receptor
+        })
 
-        Gracias por utilizar InterMatch.
-                '''
-            
-            destinatarios = [
-                empresa.usuario.email,
-                importador.usuario.email,
-                'andriuolo27@gmail.com'
-            ]
-            
-            send_mail(
-                    asunto,
-                    mensaje,
-                    settings.DEFAULT_FROM_EMAIL,
-                    destinatarios,
-                    fail_silently=False,
+    # Confirmación final
+    form = CrearReunionForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Revisá los campos.")
+        return render(request, 'gestion/crear_reunion.html', {
+            'form': form,
+            'nombre_receptor': nombre_receptor
+        })
+
+    # fecha = instancia de FechaDisponible; necesitamos su .fecha (date)
+    fecha_obj = form.cleaned_data['fecha'].fecha
+    horario = form.cleaned_data['horario']
+    mensaje = form.cleaned_data['mensaje'] or ""
+
+    # Última verificación de disponibilidad
+    if not horarios_disponibles(fecha_obj).filter(pk=horario.pk).exists():
+        messages.error(request, "Ese horario se reservó recién. Elegí otro.")
+        return redirect(request.path)
+
+    try:
+        with transaction.atomic():
+            reunion = Reunion.objects.create(
+                empresa=empresa,
+                importador=importador,
+                fecha=fecha_obj,     # DateField ✅
+                horario=horario,
+                mensaje=mensaje,
+                estado='Programada',
+                observaciones=""
             )
-
-            return redirect('reunion_exitosa')
-        else:
-            print("❌ Errores en el formulario:", form.errors)
-    else:
-        horarios_ocupados = Reunion.objects.filter(
-            fecha=fecha_reunion
-        ).values_list('horario_id', flat=True)
-
-        horarios_disponibles = HorarioDisponible.objects.exclude(id__in=horarios_ocupados)
-
-        form = ReunionForm(instance=reunion)
-        form.fields['horario'].queryset = horarios_disponibles
-
-    nombre_receptor = empresa.razon_social if tipo_receptor == 'empresa' else importador.razon_social
-
-    return render(request, 'gestion/crear_reunion.html', {
-        'form': form,
-        'tipo_receptor': tipo_receptor,
-        'nombre_receptor': nombre_receptor,
-    })
+        transaction.on_commit(lambda: enviar_correos_reunion_creada(reunion))
+        messages.success(request, f"¡Reunión programada para {fecha_obj} a las {horario.hora.strftime('%H:%M')}!")
+        return redirect('panel_empresa' if rol == 'Empresa Exportadora' else 'panel_importador')
+    except IntegrityError:
+        messages.error(request, "Otro usuario tomó ese horario. Probá con otro.")
+        return redirect(request.path)
 
 def reunion_exitosa(request):
     return render(request, 'gestion/reunion_exitosa.html')

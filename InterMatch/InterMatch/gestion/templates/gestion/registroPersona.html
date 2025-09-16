@@ -47,6 +47,20 @@
         .toggle-password {
             color: #EB7DBF;
         }
+
+                /* 🔹 Logo centrado */
+        .logo-container {
+            text-align: center;
+            margin: 10px 0;
+            /* menos espacio entre nav y header */
+        }
+
+        .logo-container img {
+            width: auto;
+            /* crece en desktop, se ajusta en móvil */
+            height: 50px;
+            image-rendering: -webkit-optimize-contrast;
+        }
     </style>
 
 </head>
@@ -56,12 +70,15 @@
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg">
         <div class="container px-5">
-            <a class="navbar-brand" href="{% url 'inicio' %}">InterMatch</a>
+            <div class="logo-container">
+                <img src="{% static 'img/header-bg.png' %}" alt="Logo Catamarca Gobierno">
+            </div>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Sobre Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="https://portal.catamarca.gob.ar/organismos/secretaria-de-relaciones-internacionales">Sobre
+                            Nosotros</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
                 </ul>
             </div>
@@ -71,7 +88,7 @@
     <div class="container py-5">
         <div class="form-section mx-auto shadow p-5 rounded" style="max-width: 600px; background:#1A2042;">
             <h2 class="text-center mb-4" style="color:#EB7DBF; font-family:'Black Black italic', sans-serif;">
-                Registro de Persona
+                Registro
             </h2>
 
             {% if form.errors %}
@@ -90,14 +107,14 @@
                 <!-- Nombre -->
                 <div class="mb-3">
                     <label for="nombre" class="form-label text-white">Nombre</label>
-                    <input type="text" class="form-control bg-dark text-white border-0" id="nombre" name="nombre"
+                    <input type="text" class="form-control bg-white text-black border-0" id="nombre" name="nombre"
                         required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}" title="Ingrese un nombre válido (solo letras)">
                 </div>
 
                 <!-- Apellido -->
                 <div class="mb-3">
                     <label for="apellido" class="form-label text-white">Apellido</label>
-                    <input type="text" class="form-control bg-dark text-white border-0" id="apellido" name="apellido"
+                    <input type="text" class="form-control bg-white text-black border-0" id="apellido" name="apellido"
                         required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}"
                         title="Ingrese un apellido válido (solo letras)">
                 </div>
@@ -105,7 +122,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="tipo_doc" class="form-label text-white">Tipo de documento</label>
-                        <select id="tipo_doc" name="tipo_doc" class="form-select bg-dark text-white border-0" required>
+                        <select id="tipo_doc" name="tipo_doc" class="form-select bg-white text-black border-0" required>
                             <option value="" disabled selected>Seleccionar tipo</option>
                             <option value="DNI">DNI</option>
                             <option value="Pasaporte">Pasaporte</option>
@@ -115,7 +132,7 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="num_doc" class="form-label text-white">Número de documento</label>
-                        <input type="text" id="num_doc" name="num_doc" class="form-control bg-dark text-white border-0"
+                        <input type="text" id="num_doc" name="num_doc" class="form-control bg-white text-black border-0"
                             placeholder="Ingrese el número" required pattern="^[a-zA-Z0-9\s.-]{5,20}$"
                             title="Ingrese un número de documento válido. Puede contener letras, números, guiones o puntos.">
                     </div>
@@ -124,14 +141,14 @@
                 <!-- Email -->
                 <div class="mb-3">
                     <label for="email" class="form-label text-white">Correo electrónico</label>
-                    <input type="email" class="form-control bg-dark text-white border-0" id="email" name="email"
+                    <input type="email" class="form-control bg-white text-black border-0" id="email" name="email"
                         required>
                 </div>
 
                 <!-- Usuario -->
                 <div class="mb-3">
                     <label for="username" class="form-label text-white">Usuario</label>
-                    <input type="text" class="form-control bg-dark text-white border-0" id="username" name="username"
+                    <input type="text" class="form-control bg-white text-black border-0" id="username" name="username"
                         required minlength="4" maxlength="20" pattern="^[a-zA-Z0-9._]+$">
                 </div>
 
@@ -139,11 +156,14 @@
                 <div class="mb-3">
                     <label for="password" class="form-label text-white">Contraseña</label>
                     <div class="input-group">
-                        <input type="password" class="form-control bg-dark text-white border-0" id="password"
+                        <input type="password" class="form-control bg-white text-black border-0" id="password"
                             name="password" required minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
                         <button type="button" class="btn btn-outline-light" onclick="togglePassword('password', this)">
                             <i class="bi bi-eye"></i>
                         </button>
+                    </div>
+                    <div class="form-text text-muted">
+                        La contraseña debe tener al menos 8 caracteres y una mayúscula
                     </div>
                 </div>
 
@@ -151,7 +171,7 @@
                 <div class="mb-3">
                     <label for="password2" class="form-label text-white">Repetir contraseña</label>
                     <div class="input-group">
-                        <input type="password" class="form-control bg-dark text-white border-0" id="password2"
+                        <input type="password" class="form-control bg-white text-black border-0" id="password2"
                             name="password2" required>
                         <button type="button" class="btn btn-outline-light" onclick="togglePassword('password2', this)">
                             <i class="bi bi-eye"></i>
@@ -159,6 +179,9 @@
                     </div>
                     <div id="passwordHelp" class="form-text text-danger d-none">
                         ⚠️ Las contraseñas no coinciden.
+                    </div>
+                    <div class="form-text text-muted">
+                        La contraseña debe tener al menos 8 caracteres y una mayúscula
                     </div>
                 </div>
 

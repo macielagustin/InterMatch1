@@ -41,8 +41,8 @@
 
         .form-control,
         .form-select {
-            background-color: #0f1330;
-            color: white;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
             border: none;
         }
 
@@ -83,9 +83,9 @@
             background: rgba(235, 125, 191, 0.3);
         }
 
-        select{
-            background-color: #0f1330 !important;
-            color: #fff !important;
+        select {
+            background-color: #ffffff !important;
+            color: #000000 !important;
             border: 0 !important;
             border-radius: .375rem;
             padding: .375rem .75rem;
@@ -102,7 +102,6 @@
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'inicio' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Contacto</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'login' %}">Login</a></li>
                 </ul>
             </div>
@@ -155,7 +154,19 @@
                         </select>
                     </div>
 
+                    <!-- Sitio Web -->
+                    <div class="col-md-6">
+                        <label class="form-label">Sitio Web</label>
+                        <input type="url" class="form-control" name="sitio_web" placeholder="https://...">
+                    </div>
+
                     <!-- Teléfono -->
+
+                    <div class="col-md-6">
+                        <label for="id_prefijo_telefono" class="form-label">Prefijo</label>
+                        {{ form.prefijo_telefono }}
+                    </div>
+
                     <div class="col-md-6">
                         <label class="form-label">Teléfono</label>
                         <input type="tel" class="form-control" name="telefono" required>
@@ -180,33 +191,50 @@
                         </select>
                     </div>
 
-                    <!-- Sitio Web -->
-                    <div class="col-md-6">
-                        <label class="form-label">Sitio Web</label>
-                        <input type="url" class="form-control" name="sitio_web" placeholder="https://...">
-                    </div>
+
 
                     <!-- Brochure -->
                     <div class="col-md-6">
-                        <label class="form-label">Brochure (PDF)</label>
+                        <label class="form-label">Brochure (.pdf)</label>
                         <input type="file" class="form-control" name="brochure" accept=".pdf">
+                        <small class="form-text text-muted">
+                            Tamaño máximo: 10MB.
+                        </small>
                     </div>
 
                     <!-- Logo -->
-                    <div class="col-md-6">
-                        <label class="form-label">Logo de la empresa</label>
-                        <input type="file" class="form-control" name="logo" accept="image/*">
+                    <div class="col-md-6 text-center">
+                        <label class="form-label">Logo de la empresa (.jpg | .png)</label>
+                        <input type="file" class="form-control" name="logo" accept="image/*"
+                            onchange="previewLogo(event)">
+                        <small class="form-text text-muted">
+                            Tamaño máximo: 2MB.
+                        </small>
+
+                        <div class="mt-3">
+                            {% if form.instance.pk and form.instance.logo %}
+                            <img id="logoPreview" src="{{ empresa.logo.url }}" alt="Logo actual" width="150">
+                            {% else %}
+                            <img id="logoPreview" style="display:none;" width="150">
+                            {% endif %}
+                        </div>
                     </div>
 
                     <!-- Capacidad -->
                     <div class="col-md-6">
-                        <label class="form-label">Capacidad productiva mensual</label>
+                        <label class="form-label">Capacidad Productiva Anual</label>
                         <input type="number" class="form-control" name="capacidad_productiva" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Unidad de Medida</label>
+                        {{ form.unidad_capacidad }}
                     </div>
 
                     <!-- Certificaciones -->
                     <div class="col-12">
-                        <label class="form-label">Certificaciones internacionales</label>
+                        <label class="form-label">¿Posee Certificaciones Internacionales? (puede seleccionar más de
+                            uno)</label>
                         <div class="checkbox-grid">
                             {{ form.certificaciones }}
                         </div>
@@ -224,20 +252,11 @@
 
                     <!-- Países donde exporta -->
                     <div class="col-md-6" id="paises_div" style="display:none;">
-                        <label class="form-label">Países donde exporta</label>
+                        <label class="form-label">Indique los destinos de exportación (puede seleccionar más de
+                            uno) </label>
                         {{ form.paises_exporta }}
                     </div>
 
-                    <!-- Frecuencia -->
-                    <div class="col-md-6" id="frecuencia_div" style="display:none;">
-                        <label class="form-label">Frecuencia de exportación</label>
-                        <select class="form-select" name="frecuencia_exportacion" id="frecuencia_exportacion">
-                            <option value="">Seleccionar</option>
-                            <option>Ocasional</option>
-                            <option>Frecuente</option>
-                            <option>Regular</option>
-                        </select>
-                    </div>
 
                     <!-- Comentarios -->
                     <div class="col-12">
@@ -254,6 +273,18 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function previewLogo(e) {
+            const [file] = e.target.files;
+            if (file) {
+                const url = URL.createObjectURL(file);
+                const preview = document.getElementById('logoPreview');
+                preview.src = url;
+                preview.style.display = 'block';  // se muestra solo cuando hay archivo
+            }
+        }
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

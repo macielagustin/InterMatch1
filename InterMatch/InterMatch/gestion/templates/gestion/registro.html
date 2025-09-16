@@ -53,18 +53,19 @@
         }
 
         .option-card i {
-            font-size: 2.5rem;
+            font-size: 4.5rem;
             margin-bottom: 10px;
             color: #EB7DBF;
         }
 
         .option-card strong {
-            font-size: 1.1rem;
+            font-size: 1.8rem;
             margin-bottom: 5px;
+            font-family: 'Black Black italic', sans-serif;
         }
 
         .option-card small {
-            font-size: 0.8rem;
+            font-size: 2.5rem;
             color: #cfcfcf;
         }
 
@@ -111,15 +112,13 @@
             <!-- Empresa -->
             <a href="{% url 'registro_empresa' usuario_id=usuario_id %}" class="option-card text-decoration-none">
                 <i class="bi bi-building"></i>
-                <strong>Empresa Exportadora</strong>
-                <small>Represento una empresa que produce y vende al exterior</small>
+                <strong>Soy Empresa</strong>
             </a>
 
             <!-- Importador -->
             <a href="{% url 'registro_importador' usuario_id=usuario_id %}" class="option-card text-decoration-none">
                 <i class="bi bi-globe"></i>
-                <strong>Importador</strong>
-                <small>Busco proveedores argentinos para comprar productos</small>
+                <strong>Soy Importador</strong>
             </a>
         </div>
     </div>
