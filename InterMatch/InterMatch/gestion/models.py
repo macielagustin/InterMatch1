@@ -231,6 +231,7 @@ class Importador(models.Model):
         ]
     )
     comentarios = models.TextField(blank=True, null=True)
+    inversor = models.BooleanField(default=True)
 
     def __str__(self):
         return self.razon_social or f"Importador {self.pk}"

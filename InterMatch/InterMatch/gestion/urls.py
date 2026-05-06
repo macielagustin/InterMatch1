@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth.views import LogoutView
-from .views import crear_reunion
+from .views import crear_reunion, lista_empresas
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -30,6 +30,7 @@ urlpatterns = [
     path('importador/empresas/', views.empresas_disponibles, name='empresas_disponibles'),
     path('importador/empresas/<int:empresa_id>/', views.detalle_empresa, name='detalle_empresa'),
     path('empresa/<int:empresa_id>/brochure/', views.descargar_brochure, name='descargar_brochure'),
+    path('importador/empresas/', views.lista_empresas, name='lista_empresas'),
 
     # PANEL ADMIN #
     path('panel-admin/', views.panel_admin, name='panel_admin'),

@@ -396,10 +396,43 @@ def editar_empresa(request):
 
     return render(request, 'gestion/editar_empresa.html', {'empresa': empresa})
 
+from django.contrib.auth.decorators import login_required
+from .models import Importador, Rubro
+
 @login_required
 def importadores_disponibles(request):
-    importadores = Importador.objects.select_related('pais_origen', 'provincia', 'localidad').prefetch_related('rubros', 'idiomas', 'tipos_proveedor', 'paises_comercializa')
-    return render(request, 'gestion/importadores_disponibles.html', {'importadores': importadores})
+    q = request.GET.get('q')
+    rubro = request.GET.get('rubro')
+    inversor = request.GET.get('inversor')
+
+    importadores = Importador.objects.select_related(
+        'pais_origen', 'provincia', 'localidad'
+    ).prefetch_related(
+        'rubros', 'idiomas', 'tipos_proveedor', 'paises_comercializa'
+    )
+
+    # 🔍 Buscar por razón social
+    if q:
+        importadores = importadores.filter(razon_social__icontains=q)
+
+    # 🏷️ Filtrar por rubros (ManyToMany)
+    if rubro:
+        importadores = importadores.filter(rubros__nombre__icontains=rubro)
+
+    if inversor == 'true':
+        importadores = importadores.filter(inversor=True)
+    elif inversor == 'false':
+        importadores = importadores.filter(inversor=False)
+
+    # ⚠️ evitar duplicados (importante en M2M)
+    importadores = importadores.distinct()
+
+    context = {
+        'importadores': importadores,
+        'rubros': Rubro.objects.all(),  # 🔥 para el select
+    }
+
+    return render(request, 'gestion/importadores_disponibles.html', context)
 
 @login_required
 def detalle_importador(request, importador_id):
@@ -496,8 +529,27 @@ def editar_importador(request):
 
 @login_required
 def empresas_disponibles(request):
-    empresas = EmpresaExportadora.objects.select_related('provincia', 'localidad').prefetch_related('rubro', 'certificaciones')
-    return render (request, 'gestion/empresas_disponibles.html', {'empresas': empresas})
+    q = request.GET.get('q')
+    rubro = request.GET.get('rubro')
+
+    empresas = EmpresaExportadora.objects.select_related(
+        'provincia', 'localidad', 'rubro'
+    ).prefetch_related('certificaciones')
+
+    # 🔍 filtro por nombre
+    if q:
+        empresas = empresas.filter(razon_social__icontains=q)
+
+    # 🏷️ filtro por rubro
+    if rubro:
+        empresas = empresas.filter(rubro__nombre__icontains=rubro)
+
+    context = {
+        'empresas': empresas,
+        'rubros': Rubro.objects.all(),  # 🔥 clave para el select
+    }
+
+    return render(request, 'gestion/empresas_disponibles.html', context)
 
 def descargar_brochure(request, empresa_id):
     empresa = get_object_or_404(EmpresaExportadora, pk=empresa_id)
@@ -520,6 +572,26 @@ def detalle_empresa(request, empresa_id):
     return render(request, 'gestion/detalle_empresa.html', {
         'empresa': empresa
     })
+
+@login_required
+def lista_empresas(request):
+    q = request.GET.get('q')
+    rubro = request.GET.get('rubro')
+
+    empresas = EmpresaExportadora.objects.all()
+
+    if q:
+        empresas = empresas.filter(razon_social__icontains=q)
+
+    if rubro:
+        empresas = empresas.filter(rubro__nombre__icontains=rubro)
+
+    context = {
+        'empresas': empresas,
+        'rubros': Rubro.objects.all(),  # 🔥 ESTO ES LO IMPORTANTE
+    }
+
+    return render(request, 'gestion/empresas_disponibles.html', context)
 
 ####################################
 

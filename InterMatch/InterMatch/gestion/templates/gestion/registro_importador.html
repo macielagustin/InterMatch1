@@ -147,6 +147,12 @@
             <div class="error-text">{{ form.tipo_importador.errors|striptags }}</div>
           </div>
 
+          <!-- Es inversor -->
+           <div class="col-md-6">
+              <label class="form-label" for="{{ form.inversor.id_for_label }}" >¿ Es inversor ?</label>
+              {{ form.inversor }}
+           </div>
+
           <!-- Rubros de interés -->
           <div class="col-md-6">
             <label class="form-label" for="{{ form.rubros.id_for_label }}">Rubros de interés (puede seleccionar más de uno)</label>

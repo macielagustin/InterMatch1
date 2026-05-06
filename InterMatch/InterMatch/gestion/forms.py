@@ -40,10 +40,7 @@ class EmpresaExportadoraForm(forms.ModelForm):
         return cleaned
 
 class ImportadorForm(forms.ModelForm):
-    # OPCIÓN A (recomendada): usar checkbox por defecto para el booleano
-    # → simplemente NO toques experiencia_proveedores_arg en widgets
 
-    # OPCIÓN B (si querés select “Sí/No”):
     experiencia_proveedores_arg = forms.TypedChoiceField(
         choices=((True, 'Sí'), (False, 'No')),
         coerce=lambda v: v in ('True', 'true', True, '1', 1, 'on'),
@@ -75,6 +72,7 @@ class ImportadorForm(forms.ModelForm):
             'tipo_importador': forms.Select(attrs={'class': 'form-select'}),
             'presentacion_buscada': forms.Select(attrs={'class': 'form-select'}),
             'comentarios': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'inversor': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def _init_(self, *args, **kwargs):

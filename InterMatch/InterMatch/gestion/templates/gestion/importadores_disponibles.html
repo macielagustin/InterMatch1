@@ -51,6 +51,44 @@
     .btn-primary:hover{ filter:brightness(1.08); }
 
     .empty{ opacity:.85; }
+
+    /* Filtros */
+.filters{
+  background:var(--panel);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:20px;
+}
+
+.filters form{
+  display:grid;
+  grid-template-columns: 1fr 200px 140px;
+  gap:10px;
+}
+
+.filters input,
+.filters select{
+  background:var(--field);
+  color:#fff;
+  border:0;
+  border-radius:10px;
+  padding:10px 12px;
+}
+
+.filters button{
+  background:var(--accent);
+  color:#fff;
+  border:0;
+  border-radius:10px;
+  padding:10px 12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.filters button:hover{
+  filter:brightness(1.08);
+}
   </style>
 </head>
 <body>
@@ -68,12 +106,49 @@
     <a href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
   </nav>
 
+  
+
   <!-- Contenido -->
   <div class="content">
     <h2 style="font-family:'Black Black italic',sans-serif; color:var(--accent); margin:0 0 12px 0;">
       Importadores disponibles
     </h2>
 
+    <div class="filters">
+  <form method="GET">
+
+    <input 
+      type="text" 
+      name="q" 
+      placeholder="Buscar importador..."
+      value="{{ request.GET.q }}"
+    >
+
+    <select name="rubro">
+      <option value="">Todos los rubros</option>
+      {% for r in rubros %}
+        <option value="{{ r.nombre }}"
+          {% if request.GET.rubro == r.nombre %}selected{% endif %}>
+          {{ r.nombre }}
+        </option>
+      {% endfor %}
+    </select>
+
+        <select name="inversor">
+      <option value="">Todos</option>
+      <option value="true" {% if request.GET.inversor == 'true' %}selected{% endif %}>
+        Solo inversores 
+      </option>
+      <option value="false" {% if request.GET.inversor == 'false' %}selected{% endif %}>
+        No inversores
+      </option>
+    </select>
+
+    <button type="submit">Buscar</button>
+
+   </form>
+   </div>
+    
     {% for importador in importadores %}
       <article class="card">
         {% if importador.logo %}
